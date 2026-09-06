@@ -1,0 +1,70 @@
+import { Text, View, Pressable, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
+import Screen from '@/components/screen';
+import Button from '@/components/button';
+import ActionCard from '@/components/action-card';
+import { Icon } from '@/components/icon';
+
+export default function Cashier() {
+  const router = useRouter();
+  const lowStockCount = 7;
+
+  return (
+    <Screen title="Hola, Lupita">
+      <Text style={styles.shiftStatus}>Turno abierto</Text>
+
+      <Pressable style={styles.alert} onPress={() => router.push('/inventory')}>
+        <View style={styles.alertIcon}>
+          <Icon name="triangle-exclamation" size={18} color="#B45309" />
+        </View>
+        <Text style={styles.alertText}>{lowStockCount} productos por acabarse</Text>
+      </Pressable>
+
+      <View style={styles.grid}>
+        <ActionCard label="Fiados" icon="receipt" href="/credit" />
+        <ActionCard label="Calculadora" icon="calculator" href="/calculator" />
+        <ActionCard label="Corte de caja" icon="cash-register" href="/cash-count" />
+        <ActionCard label="Buscar precio" icon="magnifying-glass" href="/price-lookup" />
+      </View>
+
+      <Button label="Nueva venta" href="/sale" icon="cart-shopping" />
+    </Screen>
+  );
+}
+
+const styles = StyleSheet.create({
+  shiftStatus: {
+    textAlign: 'right',
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#0F172A',
+  },
+  alert: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: '#FEF9E8',
+    borderWidth: 1,
+    borderColor: '#FCE9A8',
+    borderRadius: 12,
+    padding: 14,
+  },
+  alertIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: '#FDF0C8',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  alertText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#92400E',
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+});
