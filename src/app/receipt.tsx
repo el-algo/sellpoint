@@ -1,23 +1,42 @@
 import { StyleSheet, View, Share } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import Screen from '@/components/screen';
 import SuccessBadge from '@/components/success-badge';
 import ReceiptCard, { type ReceiptLine } from '@/components/receipt-card';
 import SecondaryButton from '@/components/secondary-button';
 import Button from '@/components/button';
-import { formatFolioDate } from '@/lib/format';
+import { formatFolioDate, formatCurrency, formatQuantity, itemSubtotal } from '@/lib/format';
+import { useSaleItems } from '@/lib/sale-store';
+
+const METHOD_LABELS: Record<string, string> = {
+  efectivo: 'Efectivo',
+  fiado: 'Fiado',
+  transferencia: 'Transferencia',
+};
 
 export default function Receipt() {
-  const router = useRouter();
-  const { folio } = useLocalSearchParams<{ folio: string }>();
+  const { folio, total, method, received, change } = useLocalSearchParams<{
+    folio: string;
+    total: string;
+    method: string;
+    received: string;
+    change: string;
+  }>();
+  const items = useSaleItems();
   const date = new Date();
 
   const lines: ReceiptLine[] = [
-    { label: 'Coca-Cola 600 ml', value: '40.00' },
-    { label: 'Tomate a granel', value: '24.00' },
-    { label: 'Sabritas adobadas', value: '18.00' },
-    { label: 'Total', value: '82.00', divider: true },
-    { label: 'Efectivo / Cambio', value: '100.00 / 18.00' },
+    ...items.map((item) => ({
+      label: `${item.name} ×${formatQuantity(item.quantity, item.unit)}`,
+      value: formatCurrency(itemSubtotal(item)),
+    })),
+    { label: 'Total', value: formatCurrency(Number(total) || 0), divider: true },
+    method === 'efectivo'
+      ? {
+          label: 'Efectivo / Cambio',
+          value: `${formatCurrency(Number(received) || 0)} / ${formatCurrency(Number(change) || 0)}`,
+        }
+      : { label: 'Método', value: METHOD_LABELS[method as string] ?? method ?? '' },
   ];
 
   const share = () => {

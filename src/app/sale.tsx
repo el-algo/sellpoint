@@ -1,23 +1,21 @@
-import { useMemo, useState } from 'react';
-import { StyleSheet, Pressable, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { useEffect, useMemo } from 'react';
+import { StyleSheet, View, Pressable, Alert } from 'react-native';
 import Screen from '@/components/screen';
-import SearchInput from '@/components/search-input';
+import SearchLink from '@/components/search-link';
 import SaleItemList from '@/components/sale-item-list';
 import TotalBar from '@/components/total-bar';
 import Button from '@/components/button';
 import { Icon } from '@/components/icon';
-import { saleTotal, type SaleItem } from '@/lib/format';
-
-const DEMO_ITEMS: SaleItem[] = [
-  { id: '1', name: 'Coca-Cola 600 ml', quantity: 2, unitPrice: 20, unit: 'pza' },
-  { id: '2', name: 'Tomate a granel', quantity: 0.75, unitPrice: 32, unit: 'kg' },
-  { id: '3', name: 'Sabritas adobadas', quantity: 1, unitPrice: 18, unit: 'pza' },
-];
+import { saleTotal } from '@/lib/format';
+import { useSaleItems, useCurrentSaleId, startNewSale, clearSaleItems } from '@/lib/sale-store';
 
 export default function Sale() {
-  const [query, setQuery] = useState('');
-  const [items, setItems] = useState<SaleItem[]>(DEMO_ITEMS);
-  const saleNumber = 7;
+  const items = useSaleItems();
+  const saleId = useCurrentSaleId();
+
+  useEffect(() => {
+    startNewSale();
+  }, []);
 
   const total = useMemo(() => saleTotal(items), [items]);
 
@@ -25,32 +23,29 @@ export default function Sale() {
     if (items.length === 0) return;
     Alert.alert('Cancelar venta', '¿Quieres borrar todos los artículos?', [
       { text: 'No', style: 'cancel' },
-      { text: 'Sí, borrar', style: 'destructive', onPress: () => setItems([]) },
+      { text: 'Sí, borrar', style: 'destructive', onPress: clearSaleItems },
     ]);
   };
 
   return (
     <Screen
-      title={`Venta #${String(saleNumber).padStart(4, '0')}`}
+      title={saleId ? `Venta #${String(saleId).padStart(4, '0')}` : 'Nueva venta'}
       headerRight={
         <Pressable style={styles.trashButton} onPress={clearSale}>
           <Icon name="trash-can" size={18} color="#0F172A" />
         </Pressable>
       }
     >
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        <SearchInput value={query} onChangeText={setQuery} />
+      <View style={styles.flex}>
+        <SearchLink href="/search" />
         <SaleItemList items={items} />
         <TotalBar total={total} />
         <Button
           label="Cobrar"
-          disabled={items.length === 0}
+          disabled={items.length === 0 || !saleId}
           href="/checkout"
         />
-      </KeyboardAvoidingView>
+      </View>
     </Screen>
   );
 }
