@@ -1,16 +1,23 @@
 import { StyleSheet, View, Text } from 'react-native';
-import { Icon } from '@/components/icon';
+import { Icon, type IconName } from '@/components/icon';
 
 type Props = {
   title: string;
   subtitle?: string;
+  icon?: IconName;
+  color?: string;
 };
 
-export default function SuccessBadge({ title, subtitle }: Props) {
+export default function SuccessBadge({
+  title,
+  subtitle,
+  icon = 'check',
+  color = '#41CF56',
+}: Props) {
   return (
     <View style={styles.container}>
-      <View style={styles.circle}>
-        <Icon name="check" size={44} color="#0F172A" />
+      <View style={[styles.circle, { backgroundColor: color }]}>
+        <Icon name={icon} size={44} color="#0F172A" />
       </View>
       <Text style={styles.title}>{title}</Text>
       {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
@@ -28,7 +35,6 @@ const styles = StyleSheet.create({
     width: 92,
     height: 92,
     borderRadius: 46,
-    backgroundColor: '#41CF56',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 6,

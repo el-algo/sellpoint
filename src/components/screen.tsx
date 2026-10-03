@@ -7,6 +7,7 @@ import { Icon } from '@/components/icon';
 type Props = {
   title?: string;
   showBack?: boolean;
+  centerTitle?: boolean;
   headerRight?: ReactNode;
   children: ReactNode;
   contentStyle?: ViewStyle;
@@ -15,6 +16,7 @@ type Props = {
 export default function Screen({
   title,
   showBack = true,
+  centerTitle = false,
   children,
   contentStyle,
   headerRight
@@ -30,7 +32,9 @@ export default function Screen({
               <Icon name="arrow-left" size={20} color="#0F172A" />
             </Pressable>
           )}
-          {title && <Text style={styles.title}>{title}</Text>}
+          {title && (
+            <Text style={[styles.title, centerTitle && styles.titleCentered]}>{title}</Text>
+          )}
           {headerRight && <View style={styles.headerRight}>{headerRight}</View>}
         </View>
       )}
@@ -67,6 +71,9 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '700',
     color: '#0F172A',
+  },
+  titleCentered: {
+    textAlign: 'center',
   },
   headerRight: {
     marginLeft: 'auto',

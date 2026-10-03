@@ -4,13 +4,31 @@ import Screen from '@/components/screen';
 import Button from '@/components/button';
 import ActionCard from '@/components/action-card';
 import { Icon } from '@/components/icon';
+import { useCurrentUser, signOut } from '@/lib/session-store';
 
 export default function Cashier() {
   const router = useRouter();
+  const user = useCurrentUser();
   const lowStockCount = 7;
 
+  const handleLogout = () => {
+    signOut();
+    router.replace('/');
+  };
+
   return (
-    <Screen title="Hola, Lupita">
+    <Screen
+      title={`Hola, ${user?.name ?? ''}`}
+      headerRight={
+        <Pressable
+          style={({ pressed }) => [styles.logoutButton, pressed && styles.logoutButtonPressed]}
+          onPress={handleLogout}
+        >
+          <Icon name="right-from-bracket" size={16} color="#fff" />
+          <Text style={styles.logoutLabel}>Salir</Text>
+        </Pressable>
+      }
+    >
       <Text style={styles.shiftStatus}>Turno abierto</Text>
 
       <Pressable style={styles.alert} onPress={() => router.push('/inventory')}>
@@ -33,6 +51,23 @@ export default function Cashier() {
 }
 
 const styles = StyleSheet.create({
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    height: 40,
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    backgroundColor: '#DC2626',
+  },
+  logoutButtonPressed: {
+    backgroundColor: '#B91C1C',
+  },
+  logoutLabel: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '700',
+  },
   shiftStatus: {
     textAlign: 'right',
     fontSize: 15,
