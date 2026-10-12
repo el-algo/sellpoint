@@ -4,6 +4,7 @@ import {
   View,
   ScrollView,
   KeyboardAvoidingView,
+  Keyboard,
   Platform,
   ActivityIndicator,
   type TextInput,
@@ -21,6 +22,8 @@ const STORE_NAME = 'Abarrotes Doña Mari';
 export default function Login() {
   const router = useRouter();
   const pinRef = useRef<TextInput>(null);
+  const scrollRef = useRef<ScrollView>(null);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const [users, setUsers] = useState<User[] | null>(null);
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -39,6 +42,33 @@ export default function Login() {
     const t = setTimeout(() => pinRef.current?.focus(), 100);
     return () => clearTimeout(t)
   }, [selectedId]);
+
+  useEffect(() => {
+  const event = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+  const sub = Keyboard.addListener(event, () => {
+    scrollRef.current?.scrollToEnd({ animated: true });
+  });
+  return () => sub.remove();
+}, []);
+
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const show = Keyboard.addListener(showEvent, (e) => {
+      setKeyboardHeight(e.endCoordinates.height);
+      setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 50);
+    });
+    const hide = Keyboard.addListener(hideEvent, () => {
+      setKeyboardHeight(0);
+      pinRef.current?.blur();
+    });
+
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
 
   const handleSelect = (userId: number) => {
     setSelectedId(userId);
@@ -71,48 +101,45 @@ export default function Login() {
 
   return (
     <Screen title="SellPoint" showBack={false} centerTitle contentStyle={styles.body}>
-      <KeyboardAvoidingView
+      <ScrollView
+        ref={scrollRef}
         style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        contentContainerStyle={[styles.content, { paddingBottom: 16 + keyboardHeight }]}
+        keyboardShouldPersistTaps="handled"
       >
-        <ScrollView
-          contentContainerStyle={styles.content}
-          keyboardShouldPersistTaps="handled"
-        >
-          <SuccessBadge
-            title={STORE_NAME}
-            subtitle="Selecciona quién eres"
-            icon="cash-register"
-            color="#D1FAE5"
+        <SuccessBadge
+          title={STORE_NAME}
+          subtitle="Selecciona quién eres"
+          icon="cash-register"
+          color="#D1FAE5"
+        />
+
+        <View style={styles.users}>
+          {users === null ? (
+            <ActivityIndicator color="#41CF56" />
+          ) : (
+            users.map((user) => (
+              <UserCard
+                key={user.id}
+                user={user}
+                selected={user.id === selectedId}
+                onPress={() => handleSelect(user.id)}
+              />
+            ))
+          )}
+        </View>
+
+        <View style={styles.pin}>
+          <PinInput
+            ref={pinRef}
+            label="NIP de 4 dígitos"
+            value={pin}
+            onChangeText={handlePinChange}
+            error={error}
+            disabled={selectedId === null}
           />
-
-          <View style={styles.users}>
-            {users === null ? (
-              <ActivityIndicator color="#41CF56" />
-            ) : (
-              users.map((user) => (
-                <UserCard
-                  key={user.id}
-                  user={user}
-                  selected={user.id === selectedId}
-                  onPress={() => handleSelect(user.id)}
-                />
-              ))
-            )}
-          </View>
-
-          <View style={styles.pin}>
-            <PinInput
-              ref={pinRef}
-              label="NIP de 4 dígitos"
-              value={pin}
-              onChangeText={handlePinChange}
-              error={error}
-              disabled={selectedId === null}
-            />
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        </View>
+      </ScrollView>
     </Screen>
   );
 }
