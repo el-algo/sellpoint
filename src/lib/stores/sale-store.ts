@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import type { SaleItem } from '@/lib/uitls/format';
+import type { SaleItem } from '@/lib/utils/format';
 import { initDatabase, createSale, type GroceryItem } from '@/lib/db/db-services';
 
 type Listener = () => void;
