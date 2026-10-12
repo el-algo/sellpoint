@@ -1,12 +1,12 @@
 import { useReducer } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import Screen from '@/components/screen';
-import CalculatorKey from '@/components/calculator-key';
+import Screen from '@/components/ui/screen';
+import CalculatorKey from '@/components/calculator/calculator-key';
 import {
   calculatorReducer,
   initialCalculatorState,
   type Operator,
-} from '@/lib/calculator';
+} from '@/lib/utils/calculator';
 
 export default function Calculator() {
   const [state, dispatch] = useReducer(calculatorReducer, initialCalculatorState);

@@ -1,6 +1,6 @@
 import { StyleSheet, Pressable, Text } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
-import { Icon } from '@/components/icon';
+import { Icon } from '@/components/ui/icon';
 
 type Props = {
   href: Href;

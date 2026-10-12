@@ -9,12 +9,12 @@ import {
   type TextInput,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import Screen from '@/components/screen';
-import SuccessBadge from '@/components/success-badge';
-import UserCard from '@/components/user-card';
-import PinInput, { PIN_LENGTH } from '@/components/pin-input';
-import { initDatabase, getAllUsers, verifyUserPin, type User } from '@/lib/db-services';
-import { signIn } from '@/lib/session-store';
+import Screen from '@/components/ui/screen';
+import SuccessBadge from '@/components/ui/success-badge';
+import UserCard from '@/components/auth/user-card';
+import PinInput, { PIN_LENGTH } from '@/components/auth/pin-input';
+import { initDatabase, getAllUsers, verifyUserPin, type User } from '@/lib/db/db-services';
+import { signIn } from '@/lib/stores/session-store';
 
 const STORE_NAME = 'Abarrotes Doña Mari';
 

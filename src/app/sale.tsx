@@ -1,13 +1,13 @@
 import { useEffect, useMemo } from 'react';
 import { StyleSheet, View, Pressable, Alert } from 'react-native';
-import Screen from '@/components/screen';
-import SearchLink from '@/components/search-link';
-import SaleItemList from '@/components/sale-item-list';
-import TotalBar from '@/components/total-bar';
-import Button from '@/components/button';
-import { Icon } from '@/components/icon';
-import { saleTotal } from '@/lib/format';
-import { useSaleItems, useCurrentSaleId, startNewSale, clearSaleItems } from '@/lib/sale-store';
+import Screen from '@/components/ui/screen';
+import SearchLink from '@/components/catalog/search-link';
+import SaleItemList from '@/components/sale/sale-item-list';
+import TotalBar from '@/components/sale/total-bar';
+import Button from '@/components/ui/button';
+import { Icon } from '@/components/ui/icon';
+import { saleTotal } from '@/lib/utils/format';
+import { useSaleItems, useCurrentSaleId, startNewSale, clearSaleItems } from '@/lib/stores/sale-store';
 
 export default function Sale() {
   const items = useSaleItems();

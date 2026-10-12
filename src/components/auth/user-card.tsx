@@ -1,7 +1,7 @@
 import { StyleSheet, Pressable, View, Text } from 'react-native';
-import { Icon } from '@/components/icon';
-import type { User } from '@/lib/db-services';
-import type { RoleName } from '@/lib/seed-users';
+import { Icon } from '@/components/ui/icon';
+import type { User } from '@/lib/db/db-services';
+import type { RoleName } from '@/lib/db/seed-users';
 
 const ROLE_LABELS: Record<RoleName, string> = {
   admin: 'Dueña',

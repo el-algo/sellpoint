@@ -1,5 +1,5 @@
 import { StyleSheet, View, Text } from 'react-native';
-import { formatCurrency } from '@/lib/format';
+import { formatCurrency } from '@/lib/utils/format';
 
 type Props = {
   total: number;

@@ -1,10 +1,10 @@
 import { Text, View, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import Screen from '@/components/screen';
-import Button from '@/components/button';
-import ActionCard from '@/components/action-card';
-import { Icon } from '@/components/icon';
-import { useCurrentUser, signOut } from '@/lib/session-store';
+import Screen from '@/components/ui/screen';
+import Button from '@/components/ui/button';
+import ActionCard from '@/components/ui/action-card';
+import { Icon } from '@/components/ui/icon';
+import { useCurrentUser, signOut } from '@/lib/stores/session-store';
 
 export default function Cashier() {
   const router = useRouter();

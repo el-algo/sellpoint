@@ -4,7 +4,7 @@ import {
   formatQuantity,
   itemSubtotal,
   type SaleItem,
-} from '@/lib/format';
+} from '@/lib/utils/format';
 
 type Props = {
   item: SaleItem;

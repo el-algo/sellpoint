@@ -1,6 +1,6 @@
 import { StyleSheet, View, FlatList, Text } from 'react-native';
-import SaleItemRow from '@/components/sale-item-row';
-import type { SaleItem } from '@/lib/format';
+import SaleItemRow from '@/components/sale/sale-item-row';
+import type { SaleItem } from '@/lib/utils/format';
 
 type Props = {
   items: SaleItem[];

@@ -1,6 +1,6 @@
 import * as SQLite from 'expo-sqlite';
-import { SEED_ROLES, SEED_USERS, type RoleName } from '@/lib/seed-users';
-import { hashPin, verifyPin } from '@/lib/pin-hash';
+import { SEED_ROLES, SEED_USERS, type RoleName } from '@/lib/db/seed-users';
+import { hashPin, verifyPin } from '@/lib/utils/pin-hash';
 
 export const DATABASE_NAME = 'sellpoint.db';
 

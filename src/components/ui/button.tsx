@@ -1,6 +1,6 @@
 import { StyleSheet, View, Pressable, Text } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
-import { Icon, type IconName } from '@/components/icon';
+import { Icon, type IconName } from '@/components/ui/icon';
 
 type Props = {
   label: string;

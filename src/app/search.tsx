@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, KeyboardAvoidingView, Platform, Text } from 'react-native';
 import { useRouter } from 'expo-router';
-import Screen from '@/components/screen';
-import SearchInput from '@/components/search-input';
-import CatalogSearchResults from '@/components/catalog-search-results';
-import QuantityStepper from '@/components/quantity-stepper';
-import Button from '@/components/button';
-import { initDatabase, searchItemsByName, type GroceryItem } from '@/lib/db-services';
-import { addItemToSale, getCartQuantity } from '@/lib/sale-store';
+import Screen from '@/components/ui/screen';
+import SearchInput from '@/components/catalog/search-input';
+import CatalogSearchResults from '@/components/catalog/catalog-search-results';
+import QuantityStepper from '@/components/sale/quantity-stepper';
+import Button from '@/components/ui/button';
+import { initDatabase, searchItemsByName, type GroceryItem } from '@/lib/db/db-services';
+import { addItemToSale, getCartQuantity } from '@/lib/stores/sale-store';
 
 export default function Search() {
   const router = useRouter();

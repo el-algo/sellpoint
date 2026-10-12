@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { StyleSheet, View, Text, Pressable, type ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Icon } from '@/components/icon';
+import { Icon } from '@/components/ui/icon';
 
 type Props = {
   title?: string;

@@ -1,12 +1,12 @@
 import { StyleSheet, View, Share } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import Screen from '@/components/screen';
-import SuccessBadge from '@/components/success-badge';
-import ReceiptCard, { type ReceiptLine } from '@/components/receipt-card';
-import SecondaryButton from '@/components/secondary-button';
-import Button from '@/components/button';
-import { formatFolioDate, formatCurrency, formatQuantity, itemSubtotal } from '@/lib/format';
-import { useSaleItems } from '@/lib/sale-store';
+import Screen from '@/components/ui/screen';
+import SuccessBadge from '@/components/ui/success-badge';
+import ReceiptCard, { type ReceiptLine } from '@/components/checkout/receipt-card';
+import SecondaryButton from '@/components/ui/secondary-button';
+import Button from '@/components/ui/button';
+import { formatFolioDate, formatCurrency, formatQuantity, itemSubtotal } from '@/lib/utils/format';
+import { useSaleItems } from '@/lib/stores/sale-store';
 
 const METHOD_LABELS: Record<string, string> = {
   efectivo: 'Efectivo',

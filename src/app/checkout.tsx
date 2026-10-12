@@ -1,15 +1,15 @@
 import { useMemo, useState } from 'react';
 import { StyleSheet, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import Screen from '@/components/screen';
-import SegmentedControl from '@/components/segmented-control';
-import AmountInput from '@/components/amount-input';
-import QuickAmounts from '@/components/quick-amounts';
-import ChangeDisplay from '@/components/change-display';
-import Button from '@/components/button';
-import { formatCurrency, saleTotal, type PaymentMethod } from '@/lib/format';
-import { useSaleItems, useCurrentSaleId } from '@/lib/sale-store';
-import { completeSale } from '@/lib/db-services';
+import Screen from '@/components/ui/screen';
+import SegmentedControl from '@/components/ui/segmented-control';
+import AmountInput from '@/components/checkout/amount-input';
+import QuickAmounts from '@/components/checkout/quick-amounts';
+import ChangeDisplay from '@/components/checkout/change-display';
+import Button from '@/components/ui/button';
+import { formatCurrency, saleTotal, type PaymentMethod } from '@/lib/utils/format';
+import { useSaleItems, useCurrentSaleId } from '@/lib/stores/sale-store';
+import { completeSale } from '@/lib/db/db-services';
 
 const METHODS = [
   { value: 'efectivo' as const, label: 'Efectivo' },

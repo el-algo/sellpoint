@@ -1,5 +1,5 @@
 import { StyleSheet, View, Text } from 'react-native';
-import { Icon, type IconName } from '@/components/icon';
+import { Icon, type IconName } from '@/components/ui/icon';
 
 type Props = {
   title: string;
