@@ -51,6 +51,7 @@ export default function PinInput({ label, value, onChangeText, error, disabled, 
         secureTextEntry
         editable={!disabled}
         caretHidden
+        showSoftInputOnFocus
       />
     </Pressable>
   );
@@ -106,8 +107,10 @@ const styles = StyleSheet.create({
   },
   hiddenInput: {
     position: 'absolute',
-    width: 1,
-    height: 1,
-    opacity: 0,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.01,
   },
 });

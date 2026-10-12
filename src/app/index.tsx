@@ -35,16 +35,15 @@ export default function Login() {
   }, []);
 
   useEffect(() => {
-    if (selectedId !== null) {
-      pinRef.current?.focus();
-    }
+    if (selectedId === null) return;
+    const t = setTimeout(() => pinRef.current?.focus(), 100);
+    return () => clearTimeout(t)
   }, [selectedId]);
 
   const handleSelect = (userId: number) => {
     setSelectedId(userId);
     setPin('');
     setError(undefined);
-    pinRef.current?.focus();
   };
 
   const handlePinChange = async (value: string) => {
