@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import type { User } from '@/lib/db/db-services';
+import type { User } from '@/lib/db';
 
 type Listener = () => void;
 

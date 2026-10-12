@@ -9,7 +9,7 @@ import ChangeDisplay from '@/components/checkout/change-display';
 import Button from '@/components/ui/button';
 import { formatCurrency, saleTotal, type PaymentMethod } from '@/lib/utils/format';
 import { useSaleItems, useCurrentSaleId } from '@/lib/stores/sale-store';
-import { completeSale } from '@/lib/db/db-services';
+import { completeSale } from '@/lib/db';
 
 const METHODS = [
   { value: 'efectivo' as const, label: 'Efectivo' },

@@ -1,6 +1,6 @@
 import { StyleSheet, View, FlatList, Text } from 'react-native';
 import CatalogItemRow from '@/components/catalog/catalog-item-row';
-import type { GroceryItem } from '@/lib/db/db-services';
+import type { GroceryItem } from '@/lib/db';
 
 type Props = {
   items: GroceryItem[];

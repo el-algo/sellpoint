@@ -6,7 +6,7 @@ import SearchInput from '@/components/catalog/search-input';
 import CatalogSearchResults from '@/components/catalog/catalog-search-results';
 import QuantityStepper from '@/components/sale/quantity-stepper';
 import Button from '@/components/ui/button';
-import { initDatabase, searchItemsByName, type GroceryItem } from '@/lib/db/db-services';
+import { initDatabase, searchItemsByName, type GroceryItem } from '@/lib/db';
 import { addItemToSale, getCartQuantity } from '@/lib/stores/sale-store';
 
 export default function Search() {

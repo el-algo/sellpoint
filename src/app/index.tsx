@@ -13,7 +13,7 @@ import Screen from '@/components/ui/screen';
 import SuccessBadge from '@/components/ui/success-badge';
 import UserCard from '@/components/auth/user-card';
 import PinInput, { PIN_LENGTH } from '@/components/auth/pin-input';
-import { initDatabase, getAllUsers, verifyUserPin, type User } from '@/lib/db/db-services';
+import { initDatabase, getAllUsers, verifyUserPin, type User } from '@/lib/db';
 import { signIn } from '@/lib/stores/session-store';
 
 const STORE_NAME = 'Abarrotes Doña Mari';

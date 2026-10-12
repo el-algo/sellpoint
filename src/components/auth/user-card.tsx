@@ -1,6 +1,6 @@
 import { StyleSheet, Pressable, View, Text } from 'react-native';
 import { Icon } from '@/components/ui/icon';
-import type { User } from '@/lib/db/db-services';
+import type { User } from '@/lib/db';
 import type { RoleName } from '@/lib/db/seed-users';
 
 const ROLE_LABELS: Record<RoleName, string> = {

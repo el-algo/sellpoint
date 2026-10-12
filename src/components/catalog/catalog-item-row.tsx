@@ -1,5 +1,5 @@
 import { StyleSheet, Pressable, View, Text } from 'react-native';
-import type { GroceryItem } from '@/lib/db/db-services';
+import type { GroceryItem } from '@/lib/db';
 import {
   formatCurrency,
 } from '@/lib/utils/format';
