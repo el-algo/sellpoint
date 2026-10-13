@@ -79,3 +79,28 @@ export async function verifyUserPin(userId: number, pin: string): Promise<User |
   const { pin: _stored, ...user } = row;
   return user;
 }
+
+export async function createUser(name: string, role: RoleName, pin: string): Promise<number> {
+  const db = await getDatabase();
+  const trimmed = name.trim();
+
+  const existing = await db.getFirstAsync<{ id: number }>(
+    'SELECT id FROM users WHERE LOWER(name) = LOWER(?)',
+    trimmed
+  );
+  if (existing) {
+    throw new Error('DUPLICATE_NAME');
+  }
+
+  const result = await db.runAsync(
+    'INSERT INTO users (name, role_id, pin) SELECT ?, id, ? FROM roles WHERE role_name = ?',
+    trimmed,
+    await hashPin(pin),
+    role
+  );
+
+  if (result.changes === 0) {
+    throw new Error('ROLE_NOT_FOUND');
+  }
+  return result.lastInsertRowId;
+}
