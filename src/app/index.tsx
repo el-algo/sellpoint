@@ -15,7 +15,7 @@ import SuccessBadge from '@/components/ui/success-badge';
 import UserCard from '@/components/auth/user-card';
 import PinInput, { PIN_LENGTH } from '@/components/auth/pin-input';
 import { initDatabase, getAllUsers, verifyUserPin, type User } from '@/lib/db';
-import { signIn } from '@/lib/stores/session-store';
+import { signIn, isAdmin } from '@/lib/stores/session-store';
 
 const STORE_NAME = 'Abarrotes Doña Mari';
 
@@ -96,7 +96,10 @@ export default function Login() {
 
     setPin('');
     signIn(user);
-    router.replace('/cashier');
+    if(isAdmin(user))
+      router.replace('/admin');
+    else
+      router.replace('/cashier');
   };
 
   return (
