@@ -55,6 +55,14 @@ export async function getAllUsers(): Promise<User[]> {
   return db.getAllAsync<User>(`${USER_SELECT} ORDER BY users.name ASC`);
 }
 
+export async function getUsersByRole(role: RoleName): Promise<User[]> {
+  const db = await getDatabase();
+  return db.getAllAsync<User>(
+    `${USER_SELECT} WHERE roles.role_name = ? ORDER BY users.name ASC`,
+    role
+  );
+}
+
 export async function verifyUserPin(userId: number, pin: string): Promise<User | null> {
   const db = await getDatabase();
   const row = await db.getFirstAsync<User & { pin: string }>(
