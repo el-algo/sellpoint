@@ -1,20 +1,49 @@
-import { Text, View, Pressable, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
+import { Text, View, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
+import { useRouter, useFocusEffect } from 'expo-router';
+import { useCallback, useState } from 'react';
 import Screen from '@/components/ui/screen';
 import Button from '@/components/ui/button';
+import SuccessBadge from '@/components/ui/success-badge';
 import ActionCard from '@/components/ui/action-card';
 import { Icon } from '@/components/ui/icon';
 import { useCurrentUser, signOut } from '@/lib/stores/session-store';
+import { initDatabase, getSalesTotalByDate, type DailySales } from '@/lib/db';
+import { formatCurrency } from '@/lib/utils/format';
 
 export default function Admin() {
   const router = useRouter();
   const user = useCurrentUser();
   const lowStockCount = 7;
+  const [today, setToday] = useState<DailySales | null>(null);
+  const [error, setError] = useState<string | undefined>();
 
   const handleLogout = () => {
     signOut();
     router.replace('/');
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+
+      initDatabase()
+        .then(() => getSalesTotalByDate())
+        .then((result) => {
+          if (active) {
+            setToday(result);
+            setError(undefined);
+          }
+        })
+        .catch((e) => {
+          console.error('Error cargando las ventas:', e);
+          if (active) setError('No se pudieron cargar las ventas');
+        });
+
+      return () => {
+        active = false;
+      };
+    }, [])
+  );
 
   return (
     <Screen
@@ -30,6 +59,19 @@ export default function Admin() {
       }
     >
       <Text style={styles.shiftStatus}>Turno abierto</Text>
+
+      <View style={styles.grid}>
+        <Text>Venta de hoy:</Text>
+        {error ? (
+          <Text style={styles.error}>{error}</Text>
+        ) : today === null ? (
+          <ActivityIndicator color="#41CF56" />
+        ) : (
+          <Text>
+            {formatCurrency(today.total)}
+          </Text>
+      )}
+      </View>
 
       <View style={styles.grid}>
         <ActionCard label="Fiados" icon="receipt" href="/credit" />

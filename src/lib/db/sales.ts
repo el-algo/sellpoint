@@ -17,6 +17,11 @@ export type CompleteSaleInput = {
   change?: number;
 };
 
+export type DailySales = {
+  total: number;   // suma de las ventas del día
+  count: number;   // cuántas ventas fueron
+};
+
 export async function createSale(): Promise<number> {
   const db = await getDatabase();
   const result = await db.runAsync(
@@ -60,4 +65,27 @@ export async function completeSale(input: CompleteSaleInput): Promise<void> {
       input.saleId
     );
   });
+}
+
+export async function getSalesTotalByDate(date: Date = new Date()): Promise<DailySales> {
+  const db = await getDatabase();
+
+  // Inicio y fin del día en hora LOCAL del dispositivo
+  const start = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const end = new Date(start);
+  end.setDate(end.getDate() + 1);
+
+  const row = await db.getFirstAsync<{ total: number; count: number }>(
+    `SELECT COALESCE(SUM(total), 0) AS total, COUNT(*) AS count
+     FROM sales
+     WHERE status = 'completed'
+       AND completed_at >= ? AND completed_at < ?`,
+    start.toISOString(),
+    end.toISOString()
+  );
+
+  return {
+    total: Math.round((row?.total ?? 0) * 100) / 100,
+    count: row?.count ?? 0,
+  };
 }

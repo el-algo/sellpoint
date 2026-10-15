@@ -23,6 +23,8 @@ export { getAllItems, searchItemsByName, type GroceryItem } from './items';
 export {
   createSale,
   completeSale,
+  getSalesTotalByDate,
   type SaleLineInput,
   type CompleteSaleInput,
+  type DailySales,
 } from './sales';
