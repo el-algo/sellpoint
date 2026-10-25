@@ -12,13 +12,24 @@ import Screen from '@/components/ui/screen';
 import SuccessBadge from '@/components/ui/success-badge';
 import UserCard from '@/components/auth/user-card';
 import AddCashierModal from '@/components/auth/add-cashier-modal';
-import { initDatabase, getUsersByRole, createUser, type User } from '@/lib/db';
+import EditCashierModal from '@/components/auth/edit-cashier-modal';
+import {
+  initDatabase,
+  getUsersByRole,
+  createUser,
+  updateUser,
+  deleteUser,
+  type User,
+} from '@/lib/db';
 
 export default function Users() {
   const [users, setUsers] = useState<User[] | null>(null);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
   const [error, setError] = useState<string | undefined>();
-  const [modalVisible, setModalVisible] = useState(false);
+  const [addVisible, setAddVisible] = useState(false);
+
+  // Se guardan por separado para que el modal no se vacíe durante la animación de cierre.
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [editVisible, setEditVisible] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -43,11 +54,34 @@ export default function Users() {
     }, [])
   );
 
-  // Si createUser lanza un error, el modal lo muestra y se queda abierto.
+  const reload = async () => {
+    setUsers(await getUsersByRole('cashier'));
+  };
+
+  // Si alguna de estas funciones lanza un error, el modal lo muestra y se queda abierto.
   const handleCreate = async (name: string, pin: string) => {
     await createUser(name, 'cashier', pin);
-    setUsers(await getUsersByRole('cashier'));
-    setModalVisible(false);
+    await reload();
+    setAddVisible(false);
+  };
+
+  const handleSave = async (name: string, pin?: string) => {
+    if (!editingUser) return;
+    await updateUser(editingUser.id, name, pin);
+    await reload();
+    setEditVisible(false);
+  };
+
+  const handleDelete = async () => {
+    if (!editingUser) return;
+    await deleteUser(editingUser.id);
+    await reload();
+    setEditVisible(false);
+  };
+
+  const openEdit = (user: User) => {
+    setEditingUser(user);
+    setEditVisible(true);
   };
 
   const count = users?.length ?? 0;
@@ -66,6 +100,10 @@ export default function Users() {
           color="#D1FAE5"
         />
 
+        <Pressable style={styles.addButton} onPress={() => setAddVisible(true)}>
+          <Text style={styles.addText}>+ Agregar cajero</Text>
+        </Pressable>
+
         <View style={styles.list}>
           {error ? (
             <Text style={styles.error}>{error}</Text>
@@ -78,22 +116,26 @@ export default function Users() {
               <UserCard
                 key={user.id}
                 user={user}
-                selected={user.id === selectedId}
-                onPress={() => setSelectedId(user.id === selectedId ? null : user.id)}
+                selected={editVisible && editingUser?.id === user.id}
+                onPress={() => openEdit(user)}
               />
             ))
           )}
         </View>
-        
-        <Pressable style={styles.addButton} onPress={() => setModalVisible(true)}>
-          <Text style={styles.addText}>+ Agregar cajero</Text>
-        </Pressable>
       </ScrollView>
 
       <AddCashierModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
+        visible={addVisible}
+        onClose={() => setAddVisible(false)}
         onSubmit={handleCreate}
+      />
+
+      <EditCashierModal
+        visible={editVisible}
+        user={editingUser}
+        onClose={() => setEditVisible(false)}
+        onSave={handleSave}
+        onDelete={handleDelete}
       />
     </Screen>
   );

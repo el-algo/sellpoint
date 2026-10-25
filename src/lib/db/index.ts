@@ -18,8 +18,24 @@ export function initDatabase(): Promise<void> {
 }
 
 export { DATABASE_NAME } from './connection';
-export { getAllUsers, getUsersByRole, verifyUserPin, createUser, type User } from './users';
-export { getAllItems, searchItemsByName, type GroceryItem } from './items';
+export {
+  getAllUsers,
+  getUsersByRole,
+  createUser,
+  updateUser,
+  deleteUser,
+  verifyUserPin,
+  type User,
+} from './users';
+export {
+  getAllItems,
+  searchItemsByName,
+  createItem,
+  updateItem,
+  deleteItem,
+  type GroceryItem,
+  type NewItem,
+} from './items';
 export {
   createSale,
   completeSale,
