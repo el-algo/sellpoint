@@ -59,3 +59,58 @@ export async function searchItemsByName(query: string): Promise<GroceryItem[]> {
     `%${query.trim()}%`
   );
 }
+
+export type NewItem = Omit<GroceryItem, 'id'>;
+
+export async function createItem(item: NewItem): Promise<number> {
+  const db = await getDatabase();
+  const name = item.name.trim();
+
+  const duplicate = await db.getFirstAsync<{ id: number }>(
+    'SELECT id FROM items WHERE LOWER(name) = LOWER(?)',
+    name
+  );
+  if (duplicate) throw new Error('DUPLICATE_NAME');
+
+  const result = await db.runAsync(
+    'INSERT INTO items (name, price, quantity, expiration_date) VALUES (?, ?, ?, ?)',
+    name,
+    item.price,
+    item.quantity,
+    item.expiration_date
+  );
+  return result.lastInsertRowId;
+}
+
+export async function updateItem(id: number, item: NewItem): Promise<void> {
+  const db = await getDatabase();
+  const name = item.name.trim();
+
+  const duplicate = await db.getFirstAsync<{ id: number }>(
+    'SELECT id FROM items WHERE LOWER(name) = LOWER(?) AND id != ?',
+    name,
+    id
+  );
+  if (duplicate) throw new Error('DUPLICATE_NAME');
+
+  await db.runAsync(
+    'UPDATE items SET name = ?, price = ?, quantity = ?, expiration_date = ? WHERE id = ?',
+    name,
+    item.price,
+    item.quantity,
+    item.expiration_date,
+    id
+  );
+}
+
+export async function deleteItem(id: number): Promise<void> {
+  const db = await getDatabase();
+
+  const used = await db.getFirstAsync<{ count: number }>(
+    'SELECT COUNT(*) AS count FROM sale_items WHERE item_id = ?',
+    id
+  );
+  if ((used?.count ?? 0) > 0) throw new Error('ITEM_HAS_SALES');
+
+  await db.runAsync('DELETE FROM items WHERE id = ?', id);
+}

@@ -104,3 +104,38 @@ export async function createUser(name: string, role: RoleName, pin: string): Pro
   }
   return result.lastInsertRowId;
 }
+
+export async function updateUser(id: number, name: string, pin?: string): Promise<void> {
+  const db = await getDatabase();
+  const trimmed = name.trim();
+
+  const duplicate = await db.getFirstAsync<{ id: number }>(
+    'SELECT id FROM users WHERE LOWER(name) = LOWER(?) AND id != ?',
+    trimmed,
+    id
+  );
+  if (duplicate) {
+    throw new Error('DUPLICATE_NAME');
+  }
+
+  if (pin) {
+    await db.runAsync(
+      'UPDATE users SET name = ?, pin = ? WHERE id = ?',
+      trimmed,
+      await hashPin(pin),
+      id
+    );
+  } else {
+    await db.runAsync('UPDATE users SET name = ? WHERE id = ?', trimmed, id);
+  }
+}
+
+export async function deleteUser(id: number): Promise<boolean> {
+  const db = await getDatabase();
+  const result = await db.runAsync(
+    `DELETE FROM users
+     WHERE id = ? AND role_id = (SELECT id FROM roles WHERE role_name = 'cashier')`,
+    id
+  );
+  return result.changes > 0;
+}
