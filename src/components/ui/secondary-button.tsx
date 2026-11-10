@@ -1,5 +1,6 @@
 import { StyleSheet, Pressable, Text } from 'react-native';
 import { Icon, type IconName } from '@/components/ui/icon';
+import { control } from '@/components/ui/theme';
 
 type Props = {
   label: string;
@@ -21,18 +22,12 @@ export default function SecondaryButton({ label, icon, onPress }: Props) {
 
 const styles = StyleSheet.create({
   button: {
+    ...control,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 12,
     height: 60,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    shadowColor: '#0F172A',
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
   },
   buttonPressed: {
     backgroundColor: '#F1F5F9',

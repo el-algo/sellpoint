@@ -4,7 +4,7 @@ import { StyleSheet, View, Text, TextInput, Pressable } from 'react-native';
 export const PIN_LENGTH = 4;
 
 type Props = {
-  label: string;
+  label?: string;
   value: string;
   onChangeText: (value: string) => void;
   error?: string;
@@ -17,7 +17,7 @@ export default function PinInput({ label, value, onChangeText, error, disabled, 
 
   return (
     <Pressable style={styles.container} onPress={focus} disabled={disabled}>
-      <Text style={[styles.label, disabled && styles.labelDisabled]}>{label}</Text>
+      {label && <Text style={[styles.label, disabled && styles.labelDisabled]}>{label}</Text>}
 
       <View style={styles.boxes}>
         {Array.from({ length: PIN_LENGTH }, (_, index) => {

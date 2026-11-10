@@ -1,5 +1,6 @@
 import { StyleSheet, Pressable, View, Text } from 'react-native';
 import { Icon } from '@/components/ui/icon';
+import { card } from '@/components/ui/theme';
 import type { User } from '@/lib/db';
 import type { RoleName } from '@/lib/db/seed-users';
 
@@ -37,20 +38,12 @@ export default function UserCard({ user, selected, onPress }: Props) {
 
 const styles = StyleSheet.create({
   card: {
+    ...card,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
-    backgroundColor: '#fff',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
     paddingHorizontal: 16,
     paddingVertical: 14,
-    shadowColor: '#0F172A',
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
   },
   cardPressed: {
     backgroundColor: '#F1F5F9',

@@ -12,6 +12,7 @@ import {
   View,
 } from 'react-native';
 import { PIN_LENGTH } from '@/components/auth/pin-input';
+import { control } from '@/components/ui/theme';
 import type { User } from '@/lib/db';
 
 type Props = {
@@ -283,7 +284,6 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 15,
-    fontWeight: '600',
     color: '#0F172A',
   },
   hint: {
@@ -291,14 +291,11 @@ const styles = StyleSheet.create({
     color: '#94A3B8',
   },
   input: {
-    height: 48,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    paddingHorizontal: 14,
-    fontSize: 16,
+    ...control,
+    height: 56,
+    paddingHorizontal: 16,
+    fontSize: 20,
     color: '#0F172A',
-    backgroundColor: '#fff',
   },
   error: {
     fontSize: 14,

@@ -80,6 +80,20 @@ export async function verifyUserPin(userId: number, pin: string): Promise<User |
   return user;
 }
 
+// true si el NIP pertenece a cualquier administrador.
+export async function verifyAdminPin(pin: string): Promise<boolean> {
+  const db = await getDatabase();
+  const admins = await db.getAllAsync<{ pin: string }>(
+    `SELECT users.pin FROM users JOIN roles ON roles.id = users.role_id
+     WHERE roles.role_name = 'admin'`
+  );
+
+  for (const admin of admins) {
+    if (await verifyPin(pin, admin.pin)) return true;
+  }
+  return false;
+}
+
 export async function createUser(name: string, role: RoleName, pin: string): Promise<number> {
   const db = await getDatabase();
   const trimmed = name.trim();

@@ -5,6 +5,8 @@ import Screen from '@/components/ui/screen';
 import Button from '@/components/ui/button';
 import TextField from '@/components/ui/text-field';
 import { Icon } from '@/components/ui/icon';
+import TotalBar from '@/components/sale/total-bar';
+import { card } from '@/components/ui/theme';
 import { initDatabase, registerPurchase, purchaseTotal } from '@/lib/db';
 import {
   clearReceivingLines,
@@ -94,10 +96,7 @@ export default function GoodsReceipt() {
 
       {error && <Text style={styles.error}>{error}</Text>}
 
-      <View style={styles.totalRow}>
-        <Text style={styles.totalLabel}>Total de la compra</Text>
-        <Text style={styles.totalAmount}>{formatCurrency(purchaseTotal(lines))}</Text>
-      </View>
+      <TotalBar label="Total de la compra" total={purchaseTotal(lines)} />
 
       <Button
         label="Guardar y sumar al inventario"
@@ -123,10 +122,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
+    ...card,
   },
   line: {
     flexDirection: 'row',
@@ -155,22 +151,6 @@ const styles = StyleSheet.create({
   subtotal: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#0F172A',
-  },
-  totalRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 12,
-  },
-  totalLabel: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#0F172A',
-  },
-  totalAmount: {
-    fontSize: 30,
-    fontWeight: '800',
     color: '#0F172A',
   },
   error: {

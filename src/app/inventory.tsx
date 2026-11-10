@@ -1,26 +1,20 @@
 import { useCallback, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import Screen from '@/components/ui/screen';
-import SuccessBadge from '@/components/ui/success-badge';
+import Button from '@/components/ui/button';
+import SearchInput from '@/components/catalog/search-input';
+import SectionTitle from '@/components/ui/section-title';
+import { card } from '@/components/ui/theme';
 import { initDatabase, getAllItems, type GroceryItem } from '@/lib/db';
+import { formatCurrency } from '@/lib/utils/format';
 
 const EXPIRING_DAYS = 7; // a partir de aquí se marca "Caduca pronto"
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
-const money = (n: number) => n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
-
 // Quita acentos y mayúsculas para que "dona" encuentre "Doña".
 const normalize = (text: string) =>
-  text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
 function daysUntil(dateStr: string): number {
   const [y, m, d] = dateStr.split('-').map(Number);
@@ -100,70 +94,46 @@ export default function Inventory() {
   const total = items?.length ?? 0;
 
   return (
-    <Screen title="Inventario" contentStyle={styles.body}>
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <SuccessBadge
-          title="Inventario"
-          subtitle={
-            items === null
-              ? 'Cargando...'
-              : `${total} producto${total === 1 ? '' : 's'} registrado${total === 1 ? '' : 's'}`
-          }
-          icon="cash-register"
-          color="#D1FAE5"
-        />
+    <Screen title="Productos">
+      <SearchInput value={query} onChangeText={setQuery} />
 
-        <Pressable style={styles.addButton} onPress={() => router.push('/product')}>
-          <Text style={styles.addText}>+ Agregar producto</Text>
-        </Pressable>
-
-        <TextInput
-          style={styles.search}
-          value={query}
-          onChangeText={setQuery}
-          placeholder="Buscar producto"
-          placeholderTextColor="#94A3B8"
-          autoCorrect={false}
-          returnKeyType="search"
-        />
-
-        <View style={styles.list}>
-          {error ? (
-            <Text style={styles.error}>{error}</Text>
-          ) : filtered === null ? (
-            <ActivityIndicator color="#41CF56" />
-          ) : total === 0 ? (
-            <Text style={styles.empty}>Todavía no hay productos registrados</Text>
-          ) : filtered.length === 0 ? (
-            <Text style={styles.empty}>No hay productos que coincidan con tu búsqueda</Text>
-          ) : (
-            filtered.map((item) => {
+      {error ? (
+        <Text style={styles.error}>{error}</Text>
+      ) : filtered === null ? (
+        <ActivityIndicator color="#41CF56" />
+      ) : (
+        <>
+          <SectionTitle>{`${total} producto${total === 1 ? '' : 's'} registrado${total === 1 ? '' : 's'}`}</SectionTitle>
+          <FlatList
+            style={styles.list}
+            contentContainerStyle={styles.card}
+            data={filtered}
+            keyExtractor={(item) => String(item.id)}
+            renderItem={({ item }) => {
               const tags = getTags(item);
               return (
                 <Pressable
-                  key={item.id}
-                  style={styles.card}
+                  style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
                   onPress={() =>
                     router.push({ pathname: '/product', params: { id: String(item.id) } })
                   }
                 >
-                  <View style={styles.cardTop}>
-                    <View style={styles.cardInfo}>
-                      <Text style={styles.name}>{item.name}</Text>
+                  <View style={styles.rowTop}>
+                    <View style={styles.info}>
+                      <Text style={styles.name} numberOfLines={1}>
+                        {item.name}
+                      </Text>
                       <Text style={styles.detail}>
-                        Stock: {item.quantity} · Cad. {formatDate(item.expiration_date)}
+                        Existencia: {item.quantity} · Cad. {formatDate(item.expiration_date)}
                       </Text>
                     </View>
-                    <Text style={styles.price}>{money(item.price)}</Text>
+                    <Text style={styles.price}>{formatCurrency(item.price)}</Text>
                   </View>
 
                   {tags.length > 0 && (
                     <View style={styles.tags}>
                       {tags.map((tag) => (
-                        <View
-                          key={tag.label}
-                          style={[styles.tag, { backgroundColor: tag.background }]}
-                        >
+                        <View key={tag.label} style={[styles.tag, { backgroundColor: tag.background }]}>
                           <Text style={[styles.tagText, { color: tag.color }]}>{tag.label}</Text>
                         </View>
                       ))}
@@ -171,65 +141,49 @@ export default function Inventory() {
                   )}
                 </Pressable>
               );
-            })
-          )}
-        </View>
-      </ScrollView>
+            }}
+            ItemSeparatorComponent={() => <View style={styles.separator} />}
+            ListEmptyComponent={
+              <Text style={styles.empty}>
+                {total === 0
+                  ? 'Todavía no hay productos registrados'
+                  : 'No hay productos que coincidan con tu búsqueda'}
+              </Text>
+            }
+            keyboardShouldPersistTaps="handled"
+          />
+        </>
+      )}
+
+      <Button label="+ Agregar producto" href="/product" />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  body: {
-    padding: 0,
-  },
-  content: {
-    flexGrow: 1,
-    padding: 16,
-    gap: 16,
-  },
-  addButton: {
-    height: 52,
-    borderRadius: 12,
-    backgroundColor: '#41CF56',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  addText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#fff',
-  },
-  search: {
-    height: 48,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    paddingHorizontal: 14,
-    fontSize: 16,
-    color: '#0F172A',
-    backgroundColor: '#fff',
-  },
   list: {
-    gap: 12,
+    flex: 1,
   },
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    padding: 14,
-    gap: 10,
+    ...card,
+    overflow: 'hidden',
   },
-  cardTop: {
+  row: {
+    gap: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+  },
+  rowPressed: {
+    backgroundColor: '#F8FAFC',
+  },
+  rowTop: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
+    alignItems: 'center',
     gap: 12,
   },
-  cardInfo: {
+  info: {
     flex: 1,
-    gap: 4,
+    gap: 2,
   },
   name: {
     fontSize: 16,
@@ -259,11 +213,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
   },
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: '#E2E8F0',
+  },
   empty: {
+    padding: 24,
+    textAlign: 'center',
     fontSize: 15,
     color: '#94A3B8',
-    textAlign: 'center',
-    paddingVertical: 24,
   },
   error: {
     fontSize: 14,

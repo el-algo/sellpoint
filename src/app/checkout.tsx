@@ -5,11 +5,11 @@ import Screen from '@/components/ui/screen';
 import SegmentedControl from '@/components/ui/segmented-control';
 import AmountInput from '@/components/checkout/amount-input';
 import QuickAmounts from '@/components/checkout/quick-amounts';
-import ChangeDisplay from '@/components/checkout/change-display';
+import ValueCard from '@/components/ui/value-card';
 import Button from '@/components/ui/button';
 import TextField from '@/components/ui/text-field';
-import { formatCurrency, saleTotal, type PaymentMethod } from '@/lib/utils/format';
-import { useSaleItems, useCurrentSaleId } from '@/lib/stores/sale-store';
+import { formatCurrency, saleTotals, type PaymentMethod } from '@/lib/utils/format';
+import { useSaleItems, useCurrentSaleId, useSaleDiscount } from '@/lib/stores/sale-store';
 import { completeSale } from '@/lib/db';
 
 const METHODS = [
@@ -22,7 +22,8 @@ export default function Checkout() {
   const router = useRouter();
   const items = useSaleItems();
   const saleId = useCurrentSaleId();
-  const total = useMemo(() => saleTotal(items), [items]);
+  const discount = useSaleDiscount();
+  const { subtotal, total } = useMemo(() => saleTotals(items, discount), [items, discount]);
 
   const [method, setMethod] = useState<PaymentMethod>('efectivo');
   const [received, setReceived] = useState('');
@@ -54,7 +55,7 @@ export default function Checkout() {
           unitPrice: item.unitPrice,
           quantity: item.quantity,
         })),
-        subtotal: total,
+        subtotal,
         total,
         method,
         received: isCash ? receivedValue : undefined,
@@ -94,7 +95,16 @@ export default function Checkout() {
               amounts={[50, 100, 200, 500]}
               onSelect={(amount) => setReceived((current) => String((parseFloat(current) || 0) + amount))}
             />
-            <ChangeDisplay change={change} insufficient={change < 0} />
+            {receivedValue > 0 && change < 0 ? (
+              <ValueCard
+                label="Monto insuficiente"
+                value={`Faltan ${formatCurrency(-change)}`}
+                danger
+              />
+            ) : (
+              <ValueCard label="Cambio" value={formatCurrency(Math.max(change, 0))} />
+            )}
+            <View style={styles.flex} />
           </>
         )}
 

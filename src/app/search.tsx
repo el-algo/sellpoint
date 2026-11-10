@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, KeyboardAvoidingView, Platform, Text } from 'react-native';
+import { StyleSheet, KeyboardAvoidingView, Platform, Text, View } from 'react-native';
+import { Icon } from '@/components/ui/icon';
 import { useRouter } from 'expo-router';
 import Screen from '@/components/ui/screen';
 import SearchInput from '@/components/catalog/search-input';
@@ -35,17 +36,27 @@ export default function Search() {
   }, [query, dbReady]);
 
   const available = selected ? Math.max(selected.quantity - getCartQuantity(selected.id), 0) : 0;
+  const exceeds = selected != null && quantity > available;
+  // Si pide más de lo que hay, se añade solo lo disponible.
+  const toAdd = Math.min(quantity, available);
 
   const selectItem = (item: GroceryItem) => {
-    const remaining = Math.max(item.quantity - getCartQuantity(item.id), 0);
     setSelected(item);
-    setQuantity(remaining > 0 ? 1 : 0);
+    setQuantity(1);
   };
 
   const addToSale = () => {
-    if (!selected || quantity <= 0 || quantity > available) return;
-    addItemToSale(selected, quantity);
+    if (!selected || toAdd <= 0) return;
+    addItemToSale(selected, toAdd);
     router.back();
+  };
+
+  const stockWarning = () => {
+    if (!selected) return '';
+    if (available <= 0) return 'Sin existencias disponibles';
+    const amount =
+      selected.unit === 'kg' ? `${available} kg` : `${available} pieza${available === 1 ? '' : 's'}`;
+    return `Solo ${available === 1 && selected.unit !== 'kg' ? 'queda' : 'quedan'} ${amount} en existencia`;
   };
 
   return (
@@ -60,19 +71,22 @@ export default function Search() {
           selectedId={selected?.id}
           onItemPress={selectItem}
         />
-        {selected && (
-          <Text style={styles.availability}>
-            {available > 0 ? `Disponibles: ${available}` : 'Sin existencias disponibles'}
-          </Text>
-        )}
         <QuantityStepper
           quantity={quantity}
           onDecrease={() => setQuantity((current) => Math.max(1, current - 1))}
-          onIncrease={() => setQuantity((current) => Math.min(available, current + 1))}
+          onIncrease={() => setQuantity((current) => current + 1)}
         />
+        {exceeds && (
+          <View style={styles.warning}>
+            <View style={styles.warningIcon}>
+              <Icon name="triangle-exclamation" size={14} color="#B45309" />
+            </View>
+            <Text style={styles.warningText}>{stockWarning()}</Text>
+          </View>
+        )}
         <Button
-          label="Añadir"
-          disabled={!selected || quantity <= 0 || quantity > available}
+          label={exceeds && toAdd > 0 ? `Añadir ${toAdd}` : 'Añadir'}
+          disabled={!selected || toAdd <= 0}
           onPress={addToSale}
         />
       </KeyboardAvoidingView>
@@ -85,10 +99,28 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 16,
   },
-  availability: {
-    textAlign: 'center',
-    fontSize: 14,
+  warning: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: '#FEF9E8',
+    borderWidth: 1,
+    borderColor: '#FCE9A8',
+    borderRadius: 12,
+    padding: 14,
+  },
+  warningIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#FDF0C8',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  warningText: {
+    flex: 1,
+    fontSize: 15,
     fontWeight: '600',
-    color: '#64748B',
+    color: '#92400E',
   },
 });

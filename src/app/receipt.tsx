@@ -5,8 +5,14 @@ import SuccessBadge from '@/components/ui/success-badge';
 import ReceiptCard, { type ReceiptLine } from '@/components/checkout/receipt-card';
 import SecondaryButton from '@/components/ui/secondary-button';
 import Button from '@/components/ui/button';
-import { formatFolioDate, formatCurrency, formatQuantity, itemSubtotal } from '@/lib/utils/format';
-import { useSaleItems } from '@/lib/stores/sale-store';
+import {
+  formatFolioDate,
+  formatCurrency,
+  formatQuantity,
+  itemSubtotal,
+  saleTotals,
+} from '@/lib/utils/format';
+import { useSaleItems, useSaleDiscount } from '@/lib/stores/sale-store';
 
 const METHOD_LABELS: Record<string, string> = {
   efectivo: 'Efectivo',
@@ -23,6 +29,7 @@ export default function Receipt() {
     change: string;
   }>();
   const items = useSaleItems();
+  const { discount } = saleTotals(useSaleItems(), useSaleDiscount());
   const date = new Date();
 
   const lines: ReceiptLine[] = [
@@ -30,7 +37,10 @@ export default function Receipt() {
       label: `${item.name} ×${formatQuantity(item.quantity, item.unit)}`,
       value: formatCurrency(itemSubtotal(item)),
     })),
-    { label: 'Total', value: formatCurrency(Number(total) || 0), divider: true },
+    ...(discount > 0
+      ? [{ label: 'Descuento', value: `−${formatCurrency(discount)}`, divider: true }]
+      : []),
+    { label: 'Total', value: formatCurrency(Number(total) || 0), divider: discount === 0 },
     method === 'efectivo'
       ? {
           label: 'Efectivo / Cambio',
@@ -56,7 +66,7 @@ export default function Receipt() {
 
       <View style={styles.spacer} />
 
-      <Button label="Regresar al Inicio" href="/cashier" icon="backward" />
+      <Button label="Regresar al inicio" href="/cashier" />
     </Screen>
   );
 }

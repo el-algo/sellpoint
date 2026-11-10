@@ -2,6 +2,7 @@ import { useReducer } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import Screen from '@/components/ui/screen';
 import CalculatorKey from '@/components/calculator/calculator-key';
+import { control } from '@/components/ui/theme';
 import {
   calculatorReducer,
   initialCalculatorState,
@@ -67,11 +68,8 @@ const styles = StyleSheet.create({
     gap: 24,
   },
   display: {
-    height: 58,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    backgroundColor: '#fff',
+    ...control,
+    height: 64,
     paddingHorizontal: 16,
     justifyContent: 'center',
   },

@@ -1,4 +1,5 @@
 import { StyleSheet, View, Text, TextInput } from 'react-native';
+import { control } from '@/components/ui/theme';
 
 type Props = {
   label: string;
@@ -22,7 +23,7 @@ export default function AmountInput({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
       <View style={styles.inputRow}>
         <Text style={styles.currency}>$</Text>
@@ -42,37 +43,30 @@ export default function AmountInput({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingTop: 10,
-    paddingBottom: 14,
-    gap: 4,
-    shadowColor: '#0F172A',
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
+  field: {
+    gap: 6,
   },
   label: {
-    fontSize: 14,
-    color: '#64748B',
+    fontSize: 15,
+    color: '#0F172A',
   },
   inputRow: {
+    ...control,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+    height: 64,
+    paddingHorizontal: 16,
   },
   currency: {
-    fontSize: 34,
+    fontSize: 28,
     fontWeight: '700',
     color: '#0F172A',
   },
   input: {
     flex: 1,
     minWidth: 0,
-    fontSize: 34,
+    fontSize: 28,
     fontWeight: '700',
     color: '#0F172A',
     padding: 0,

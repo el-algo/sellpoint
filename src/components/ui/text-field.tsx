@@ -1,4 +1,5 @@
 import { StyleSheet, Text, TextInput, View, type TextInputProps, type ViewStyle } from 'react-native';
+import { control } from '@/components/ui/theme';
 
 type Props = Omit<TextInputProps, 'style'> & {
   label: string;
@@ -23,13 +24,10 @@ const styles = StyleSheet.create({
     color: '#0F172A',
   },
   input: {
-    height: 58,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
+    ...control,
+    height: 56,
     paddingHorizontal: 16,
-    fontSize: 22,
+    fontSize: 20,
     color: '#0F172A',
-    backgroundColor: '#fff',
   },
 });

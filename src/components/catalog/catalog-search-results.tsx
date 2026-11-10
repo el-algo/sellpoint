@@ -1,5 +1,6 @@
 import { StyleSheet, View, FlatList, Text } from 'react-native';
 import CatalogItemRow from '@/components/catalog/catalog-item-row';
+import { card } from '@/components/ui/theme';
 import type { GroceryItem } from '@/lib/db';
 
 type Props = {
@@ -36,15 +37,9 @@ export default function CatalogSearchResults({ items, selectedId, onItemPress }:
 
 const styles = StyleSheet.create({
   card: {
+    ...card,
     flex: 1,
-    backgroundColor: '#fff',
-    borderRadius: 14,
     overflow: 'hidden',
-    shadowColor: '#0F172A',
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
   },
   separator: {
     height: StyleSheet.hairlineWidth,

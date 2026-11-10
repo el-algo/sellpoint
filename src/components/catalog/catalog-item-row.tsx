@@ -12,11 +12,6 @@ type Props = {
   highlight?: string;
 };
 
-function formatExpiration(dateString: string) {
-  const [year, month, day] = dateString.split('-');
-  return `${day}/${month}/${year}`;
-}
-
 // Parte el nombre para resaltar la palabra completa que contiene la búsqueda.
 function splitHighlight(name: string, query: string) {
   const match = name.toLowerCase().indexOf(query.toLowerCase());
@@ -30,6 +25,7 @@ function splitHighlight(name: string, query: string) {
 
 export default function CatalogItemRow({ item, selected, onPress, detail, highlight }: Props) {
   const parts = highlight ? splitHighlight(item.name, highlight) : null;
+  const lowStock = detail === undefined && item.quantity <= item.low_stock;
 
   return (
     <Pressable
@@ -53,7 +49,7 @@ export default function CatalogItemRow({ item, selected, onPress, detail, highli
             item.name
           )}
         </Text>
-        <Text style={styles.detail}>{detail ?? `Quedan ${item.quantity} ${item.unit === 'kg' ? 'kg' : 'piezas'}`}</Text>
+        <Text style={[styles.detail, lowStock && styles.detailLow]}>{detail ?? `Quedan ${item.quantity} ${item.unit === 'kg' ? 'kg' : 'piezas'}`}</Text>
       </View>
       <Text style={styles.quantity}>{formatCurrency(item.price)}</Text>
     </Pressable>
@@ -88,11 +84,15 @@ const styles = StyleSheet.create({
   },
   nameHighlight: {
     fontWeight: '700',
-    color: '#41CF56',
+    color: '#16A34A',
   },
   detail: {
     fontSize: 14,
     color: '#64748B',
+  },
+  detailLow: {
+    fontWeight: '600',
+    color: '#DC2626',
   },
   quantity: {
     fontSize: 15,

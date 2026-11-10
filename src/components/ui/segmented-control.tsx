@@ -1,4 +1,5 @@
 import { StyleSheet, View, Pressable, Text } from 'react-native';
+import { control } from '@/components/ui/theme';
 
 type Option<T extends string> = {
   value: T;
@@ -40,15 +41,9 @@ export default function SegmentedControl<T extends string>({
 
 const styles = StyleSheet.create({
   container: {
+    ...control,
     flexDirection: 'row',
-    backgroundColor: '#fff',
-    borderRadius: 12,
     overflow: 'hidden',
-    shadowColor: '#0F172A',
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
   },
   segment: {
     flex: 1,
@@ -59,7 +54,7 @@ const styles = StyleSheet.create({
     borderRightColor: '#E2E8F0',
   },
   segmentSelected: {
-    backgroundColor: '#EAFBEE',
+    backgroundColor: '#EFFDF1',
   },
   label: {
     fontSize: 15,
@@ -67,6 +62,6 @@ const styles = StyleSheet.create({
     color: '#334155',
   },
   labelSelected: {
-    color: '#2A9D42',
+    color: '#16A34A',
   },
 });

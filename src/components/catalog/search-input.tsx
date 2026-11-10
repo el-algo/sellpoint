@@ -1,5 +1,6 @@
 import { StyleSheet, View, TextInput } from 'react-native';
 import { Icon } from '@/components/ui/icon';
+import { control } from '@/components/ui/theme';
 
 type Props = {
   value: string;
@@ -12,7 +13,7 @@ export default function SearchInput({
   value,
   onChangeText,
   onSubmit,
-  placeholder = 'Escribe el artículo...',
+  placeholder = 'Buscar producto...',
 }: Props) {
   return (
     <View style={styles.container}>
@@ -34,18 +35,12 @@ export default function SearchInput({
 
 const styles = StyleSheet.create({
   container: {
+    ...control,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    backgroundColor: '#fff',
-    borderRadius: 12,
     paddingHorizontal: 16,
-    height: 52,
-    shadowColor: '#0F172A',
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
+    height: 56,
   },
   input: {
     flex: 1,

@@ -1,6 +1,7 @@
 import { StyleSheet, Pressable, View, Text } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
 import { Icon, type IconName } from '@/components/ui/icon';
+import { card } from '@/components/ui/theme';
 
 type Props = {
   label: string;
@@ -26,17 +27,11 @@ export default function ActionCard({ label, icon, href }: Props) {
 
 const styles = StyleSheet.create({
   card: {
+    ...card,
     flexGrow: 1,
     flexBasis: '47%',
-    backgroundColor: '#fff',
-    borderRadius: 14,
     padding: 16,
     gap: 24,
-    shadowColor: '#0F172A',
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
   },
   cardPressed: {
     backgroundColor: '#F1F5F9',

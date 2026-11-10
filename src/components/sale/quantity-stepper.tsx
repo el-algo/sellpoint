@@ -1,4 +1,5 @@
 import { StyleSheet, View, Pressable, Text } from 'react-native';
+import { control } from '@/components/ui/theme';
 
 type Props = {
   quantity: number;
@@ -34,17 +35,12 @@ const styles = StyleSheet.create({
     gap: 28,
   },
   stepButton: {
+    ...control,
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#0F172A',
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
   },
   stepButtonPressed: {
     backgroundColor: '#F1F5F9',

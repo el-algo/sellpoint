@@ -1,5 +1,6 @@
 import { StyleSheet, View, FlatList, Text } from 'react-native';
 import SaleItemRow from '@/components/sale/sale-item-row';
+import { card } from '@/components/ui/theme';
 import type { SaleItem } from '@/lib/utils/format';
 
 type Props = {
@@ -19,7 +20,7 @@ export default function SaleItemList({ items, onItemPress }: Props) {
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         ListEmptyComponent={
           <View style={styles.empty}>
-            <Text style={styles.emptyText}>Busca un artículo para empezar</Text>
+            <Text style={styles.emptyText}>Busca un producto para empezar</Text>
           </View>
         }
         contentContainerStyle={items.length === 0 && styles.emptyContainer}
@@ -31,15 +32,9 @@ export default function SaleItemList({ items, onItemPress }: Props) {
 
 const styles = StyleSheet.create({
   card: {
+    ...card,
     flex: 1,
-    backgroundColor: '#fff',
-    borderRadius: 14,
     overflow: 'hidden',
-    shadowColor: '#0F172A',
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
   },
   separator: {
     height: StyleSheet.hairlineWidth,

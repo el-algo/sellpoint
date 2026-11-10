@@ -1,13 +1,14 @@
 import { StyleSheet, Pressable, Text } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
 import { Icon } from '@/components/ui/icon';
+import { control } from '@/components/ui/theme';
 
 type Props = {
   href: Href;
   placeholder?: string;
 };
 
-export default function SearchLink({ href, placeholder = 'Busca un artículo...' }: Props) {
+export default function SearchLink({ href, placeholder = 'Buscar producto...' }: Props) {
   const router = useRouter();
 
   return (
@@ -23,18 +24,12 @@ export default function SearchLink({ href, placeholder = 'Busca un artículo...'
 
 const styles = StyleSheet.create({
   container: {
+    ...control,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    backgroundColor: '#fff',
-    borderRadius: 12,
     paddingHorizontal: 16,
-    height: 52,
-    shadowColor: '#0F172A',
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
+    height: 56,
   },
   pressed: {
     backgroundColor: '#F8FAFC',

@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Screen from '@/components/ui/screen';
 import SegmentedControl from '@/components/ui/segmented-control';
+import SectionTitle from '@/components/ui/section-title';
+import ValueCard from '@/components/ui/value-card';
+import { card } from '@/components/ui/theme';
 import { initDatabase, getReport, type Report } from '@/lib/db';
 import { formatCurrency, formatUnits } from '@/lib/utils/format';
 
@@ -79,26 +82,22 @@ export default function Reports() {
               ]}
             />
 
-            <View style={styles.profitCard}>
-              <Text style={styles.profitLabel}>Me quedaron</Text>
-              <Text style={styles.profitAmount}>
-                {formatCurrency(report.sold - report.cost - report.expenses)}
-              </Text>
-            </View>
+            <ValueCard
+              label="Me quedaron"
+              value={formatCurrency(report.sold - report.cost - report.expenses)}
+            />
 
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Lo que más se vende</Text>
-              {report.topItems.length > 0 ? (
-                <Rows
-                  rows={report.topItems.map((item) => ({
-                    label: item.name,
-                    value: formatUnits(item.quantity, item.unit),
-                  }))}
-                />
-              ) : (
-                <Text style={styles.empty}>Aún no hay ventas en este periodo</Text>
-              )}
-            </View>
+            <SectionTitle>Lo que más se vende</SectionTitle>
+            {report.topItems.length > 0 ? (
+              <Rows
+                rows={report.topItems.map((item) => ({
+                  label: item.name,
+                  value: formatUnits(item.quantity, item.unit),
+                }))}
+              />
+            ) : (
+              <Text style={styles.empty}>Aún no hay ventas en este periodo</Text>
+            )}
           </>
         )}
       </ScrollView>
@@ -111,10 +110,7 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
+    ...card,
   },
   row: {
     flexDirection: 'row',
@@ -132,31 +128,6 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     fontSize: 16,
     fontWeight: '700',
-    color: '#0F172A',
-  },
-  profitCard: {
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: '#fff',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    paddingVertical: 36,
-  },
-  profitLabel: {
-    fontSize: 16,
-    color: '#334155',
-  },
-  profitAmount: {
-    fontSize: 38,
-    fontWeight: '500',
-    color: '#0F172A',
-  },
-  section: {
-    gap: 6,
-  },
-  sectionTitle: {
-    fontSize: 15,
     color: '#0F172A',
   },
   empty: {

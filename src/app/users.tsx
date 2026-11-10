@@ -5,9 +5,9 @@ import {
   Text,
   ScrollView,
   ActivityIndicator,
-  Pressable,
 } from 'react-native';
-import { useFocusEffect } from 'expo-router';
+import Button from '@/components/ui/button';
+import { useFocusEffect, useRouter } from 'expo-router';
 import Screen from '@/components/ui/screen';
 import SuccessBadge from '@/components/ui/success-badge';
 import UserCard from '@/components/auth/user-card';
@@ -23,6 +23,7 @@ import {
 } from '@/lib/db';
 
 export default function Users() {
+  const router = useRouter();
   const [users, setUsers] = useState<User[] | null>(null);
   const [error, setError] = useState<string | undefined>();
   const [addVisible, setAddVisible] = useState(false);
@@ -63,6 +64,7 @@ export default function Users() {
     await createUser(name, 'cashier', pin);
     await reload();
     setAddVisible(false);
+    router.push({ pathname: '/cashier-registered', params: { name: name.trim() } });
   };
 
   const handleSave = async (name: string, pin?: string) => {
@@ -100,9 +102,7 @@ export default function Users() {
           color="#D1FAE5"
         />
 
-        <Pressable style={styles.addButton} onPress={() => setAddVisible(true)}>
-          <Text style={styles.addText}>+ Agregar cajero</Text>
-        </Pressable>
+        <Button label="+ Agregar cajero" onPress={() => setAddVisible(true)} />
 
         <View style={styles.list}>
           {error ? (
@@ -149,18 +149,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 16,
     gap: 16,
-  },
-  addButton: {
-    height: 52,
-    borderRadius: 12,
-    backgroundColor: '#41CF56',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  addText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#fff',
   },
   list: {
     gap: 14,

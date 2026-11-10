@@ -1,5 +1,6 @@
 import { StyleSheet, View, Pressable, Text } from 'react-native';
 import { formatCurrency } from '@/lib/utils/format';
+import { control } from '@/components/ui/theme';
 
 type Props = {
   amounts: number[];
@@ -28,17 +29,11 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   chip: {
+    ...control,
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 16,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    shadowColor: '#0F172A',
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
   },
   chipPressed: {
     backgroundColor: '#F1F5F9',

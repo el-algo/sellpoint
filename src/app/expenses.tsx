@@ -4,6 +4,8 @@ import Screen from '@/components/ui/screen';
 import Button from '@/components/ui/button';
 import TextField from '@/components/ui/text-field';
 import AmountInput from '@/components/checkout/amount-input';
+import TotalBar from '@/components/sale/total-bar';
+import { card } from '@/components/ui/theme';
 import {
   initDatabase,
   getExpensesSinceClosing,
@@ -57,10 +59,7 @@ export default function Expenses() {
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>Desde el último corte</Text>
-          <Text style={styles.totalAmount}>{formatCurrency(total)}</Text>
-        </View>
+        <TotalBar label="Desde el último corte" total={total} />
 
         <FlatList
           style={styles.flex}
@@ -105,27 +104,8 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 16,
   },
-  totalRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 12,
-  },
-  totalLabel: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#0F172A',
-  },
-  totalAmount: {
-    fontSize: 30,
-    fontWeight: '800',
-    color: '#0F172A',
-  },
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
+    ...card,
     overflow: 'hidden',
   },
   row: {

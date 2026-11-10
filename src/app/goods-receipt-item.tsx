@@ -60,7 +60,7 @@ export default function GoodsReceiptItem() {
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <SearchInput value={query} onChangeText={setQuery} placeholder="Buscar producto..." />
+        <SearchInput value={query} onChangeText={setQuery} />
         <CatalogSearchResults items={results} selectedId={selected?.id} onItemPress={selectItem} />
         <View style={styles.row}>
           <TextField

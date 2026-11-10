@@ -41,6 +41,14 @@ export function saleTotal(items: SaleItem[]) {
   return items.reduce((sum, item) => sum + itemSubtotal(item), 0);
 }
 
+// Un descuento mayor que el subtotal se ignora: pasa cuando se deshace un
+// artículo después de autorizarlo, y debe volver a pedirse el NIP.
+export function saleTotals(items: SaleItem[], discount: number) {
+  const subtotal = saleTotal(items);
+  const applied = discount <= subtotal ? discount : 0;
+  return { subtotal, discount: applied, total: subtotal - applied };
+}
+
 export type PaymentMethod = 'efectivo' | 'fiado' | 'transferencia';
 
 export type CompletedSale = {

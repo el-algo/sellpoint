@@ -13,6 +13,7 @@ import Screen from '@/components/ui/screen';
 import Button from '@/components/ui/button';
 import AmountInput from '@/components/checkout/amount-input';
 import ReceiptCard from '@/components/checkout/receipt-card';
+import ValueCard from '@/components/ui/value-card';
 import { initDatabase, getCashCount, closeCashCount, type CashCount as Summary } from '@/lib/db';
 import { signOut } from '@/lib/stores/session-store';
 import { formatCurrency } from '@/lib/utils/format';
@@ -95,9 +96,11 @@ export default function CashCount() {
         <AmountInput label="¿Cuánto contaste?" value={counted} onChangeText={setCounted} />
 
         {hasCount && (
-          <View style={styles.differenceCard}>
-            <Text style={styles.differenceText}>{differenceLabel(difference)}</Text>
-          </View>
+          <ValueCard
+            label="Diferencia"
+            value={differenceLabel(difference)}
+            danger={difference < 0}
+          />
         )}
 
         <View style={styles.flex} />
@@ -117,19 +120,6 @@ const styles = StyleSheet.create({
   flex: {
     flex: 1,
     gap: 16,
-  },
-  differenceCard: {
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    padding: 24,
-  },
-  differenceText: {
-    fontSize: 24,
-    fontWeight: '500',
-    color: '#0F172A',
   },
   error: {
     textAlign: 'center',

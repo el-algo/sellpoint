@@ -3,6 +3,8 @@ import { FlatList, StyleSheet, Text, View } from 'react-native';
 import Screen from '@/components/ui/screen';
 import SearchInput from '@/components/catalog/search-input';
 import CatalogItemRow from '@/components/catalog/catalog-item-row';
+import SectionTitle from '@/components/ui/section-title';
+import { card } from '@/components/ui/theme';
 import {
   initDatabase,
   searchItemsByName,
@@ -33,9 +35,9 @@ export default function PriceLookup() {
   }, [term]);
 
   return (
-    <Screen title="Búsqueda">
-      <SearchInput value={query} onChangeText={setQuery} placeholder="Buscar producto..." />
-      <Text style={styles.section}>{term ? 'RESULTADOS DE BÚSQUEDA' : 'RECIENTES'}</Text>
+    <Screen title="Buscar precio">
+      <SearchInput value={query} onChangeText={setQuery} />
+      <SectionTitle>{term ? 'Resultados de búsqueda' : 'Recientes'}</SectionTitle>
       <FlatList
         style={styles.list}
         contentContainerStyle={styles.card}
@@ -59,20 +61,11 @@ export default function PriceLookup() {
 }
 
 const styles = StyleSheet.create({
-  section: {
-    fontSize: 14,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-    color: '#64748B',
-  },
   list: {
     flex: 1,
   },
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
+    ...card,
     overflow: 'hidden',
   },
   separator: {

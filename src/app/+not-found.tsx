@@ -1,30 +1,26 @@
-import { View, StyleSheet } from 'react-native';
-import { Link, Stack } from 'expo-router';
+import { StyleSheet, Text, View } from 'react-native';
+import Screen from '@/components/ui/screen';
+import Button from '@/components/ui/button';
 
 export default function NotFoundScreen() {
   return (
-    <>
-      <Stack.Screen options={{ title: 'Esta página no existe...' }} />
-      <View style={styles.container}>
-        <Link href="/" style={styles.button}>
-          Esta página no existe... ¡Regresar al Inicio!
-        </Link>
+    <Screen title="Página no encontrada">
+      <View style={styles.center}>
+        <Text style={styles.text}>Esta página no existe.</Text>
       </View>
-    </>
+      <Button label="Regresar al inicio" href="/" />
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  center: {
     flex: 1,
-    backgroundColor: '#25292e',
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
   },
-
-  button: {
-    fontSize: 20,
-    textDecorationLine: 'underline',
-    color: '#fff',
+  text: {
+    fontSize: 16,
+    color: '#64748B',
   },
 });

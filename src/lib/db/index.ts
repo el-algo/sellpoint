@@ -25,6 +25,7 @@ export {
   updateUser,
   deleteUser,
   verifyUserPin,
+  verifyAdminPin,
   type User,
 } from './users';
 export {
@@ -54,8 +55,6 @@ export {
 export {
   createSale,
   completeSale,
-  getSalesTotalByDate,
   type SaleLineInput,
   type CompleteSaleInput,
-  type DailySales,
 } from './sales';
