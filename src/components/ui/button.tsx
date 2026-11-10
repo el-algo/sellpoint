@@ -7,10 +7,11 @@ type Props = {
   href?: Href;
   icon?: IconName;
   disabled?: boolean;
+  destructive?: boolean;
   onPress?: () => void;
 };
 
-export default function Button({ label, href, icon, onPress, disabled }: Props) {
+export default function Button({ label, href, icon, onPress, disabled, destructive }: Props) {
   const router = useRouter();
 
   const handlePress = () => {
@@ -28,10 +29,13 @@ export default function Button({ label, href, icon, onPress, disabled }: Props) 
           styles.button,
           pressed && styles.buttonPressed,
           disabled && styles.buttonDisabled,
+          destructive && styles.destructive,
+          destructive && pressed && styles.destructivePressed,
+          destructive && disabled && styles.destructiveDisabled,
         ]}
         onPress={handlePress}
         disabled={disabled}
-        android_ripple={disabled ? undefined : { color: '#2FB544' }}
+        android_ripple={disabled ? undefined : { color: destructive ? '#B91C1C' : '#2FB544' }}
       >
         {icon && <Icon name={icon} size={20} color="#fff" />}
         <Text style={styles.buttonLabel}>{label}</Text>
@@ -65,5 +69,14 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: {
     backgroundColor: '#A7E3B2',
+  },
+  destructive: {
+    backgroundColor: '#DC2626',
+  },
+  destructivePressed: {
+    backgroundColor: '#B91C1C',
+  },
+  destructiveDisabled: {
+    backgroundColor: '#F4B4B4',
   },
 });

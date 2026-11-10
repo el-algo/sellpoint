@@ -9,11 +9,28 @@ export type SaleItem = {
 };
 
 export function formatCurrency(amount: number) {
-  return `$${amount.toFixed(2)}`;
+  const formatted = amount.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  return `$${formatted}`;
 }
 
 export function formatQuantity(quantity: number, unit: SaleUnit) {
   return unit === 'kg' ? `${quantity.toFixed(3)} kg` : `${quantity}`;
+}
+
+export function formatUnits(quantity: number, unit: SaleUnit) {
+  if (unit === 'kg') return `${quantity} kg`;
+  return `${quantity} ${quantity === 1 ? 'pza' : 'pzas'}`;
+}
+
+// Regresa null si el texto no es un número mayor o igual a 0.
+export function parseAmount(text: string): number | null {
+  const clean = text.trim().replace(',', '.');
+  if (clean === '') return null;
+  const value = Number(clean);
+  return Number.isFinite(value) && value >= 0 ? value : null;
 }
 
 export function itemSubtotal(item: SaleItem) {
@@ -35,6 +52,24 @@ export type CompletedSale = {
   received?: number;
   change?: number;
 };
+
+export function formatDayMonth(isoDate: string) {
+  const date = new Date(isoDate);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}`;
+}
+
+export function formatTimeAgo(isoDate: string) {
+  const minutes = Math.floor((Date.now() - new Date(isoDate).getTime()) / 60000);
+  if (minutes < 1) return 'hace un momento';
+  if (minutes < 60) return `hace ${minutes} min`;
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `hace ${hours} ${hours === 1 ? 'hr' : 'hrs'}`;
+
+  const days = Math.floor(hours / 24);
+  return `hace ${days} ${days === 1 ? 'día' : 'días'}`;
+}
 
 export function formatFolioDate(date: Date) {
   const pad = (n: number) => String(n).padStart(2, '0');

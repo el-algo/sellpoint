@@ -8,6 +8,8 @@ type Props = {
   item: GroceryItem;
   selected?: boolean;
   onPress?: () => void;
+  detail?: string;
+  highlight?: string;
 };
 
 function formatExpiration(dateString: string) {
@@ -15,7 +17,20 @@ function formatExpiration(dateString: string) {
   return `${day}/${month}/${year}`;
 }
 
-export default function CatalogItemRow({ item, selected, onPress }: Props) {
+// Parte el nombre para resaltar la palabra completa que contiene la búsqueda.
+function splitHighlight(name: string, query: string) {
+  const match = name.toLowerCase().indexOf(query.toLowerCase());
+  if (match < 0) return null;
+
+  const start = name.lastIndexOf(' ', match) + 1;
+  const space = name.indexOf(' ', match + query.length);
+  const end = space < 0 ? name.length : space;
+  return [name.slice(0, start), name.slice(start, end), name.slice(end)];
+}
+
+export default function CatalogItemRow({ item, selected, onPress, detail, highlight }: Props) {
+  const parts = highlight ? splitHighlight(item.name, highlight) : null;
+
   return (
     <Pressable
       style={({ pressed }) => [
@@ -24,12 +39,21 @@ export default function CatalogItemRow({ item, selected, onPress }: Props) {
         selected && styles.rowSelected,
       ]}
       onPress={onPress}
+      disabled={!onPress}
     >
       <View style={styles.info}>
-        <Text style={styles.name} numberOfLines={1}>
-          {item.name}
+        <Text style={[styles.name, parts && styles.nameRegular]} numberOfLines={1}>
+          {parts ? (
+            <>
+              {parts[0]}
+              <Text style={styles.nameHighlight}>{parts[1]}</Text>
+              {parts[2]}
+            </>
+          ) : (
+            item.name
+          )}
         </Text>
-        <Text style={styles.detail}>Quedan {item.quantity} piezas</Text>
+        <Text style={styles.detail}>{detail ?? `Quedan ${item.quantity} ${item.unit === 'kg' ? 'kg' : 'piezas'}`}</Text>
       </View>
       <Text style={styles.quantity}>{formatCurrency(item.price)}</Text>
     </Pressable>
@@ -58,6 +82,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: '#0F172A',
+  },
+  nameRegular: {
+    fontWeight: '400',
+  },
+  nameHighlight: {
+    fontWeight: '700',
+    color: '#41CF56',
   },
   detail: {
     fontSize: 14,

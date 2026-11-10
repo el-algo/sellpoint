@@ -49,7 +49,7 @@ export function addItemToSale(item: GroceryItem, quantity: number) {
           ? { ...saleItem, quantity: saleItem.quantity + quantity }
           : saleItem
       )
-    : [...items, { id, name: item.name, quantity, unitPrice: item.price, unit: 'pza' }];
+    : [...items, { id, name: item.name, quantity, unitPrice: item.price, unit: item.unit }];
 
   emit();
 }

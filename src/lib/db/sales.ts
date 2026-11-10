@@ -15,6 +15,7 @@ export type CompleteSaleInput = {
   method: string;
   received?: number;
   change?: number;
+  debtor?: string;
 };
 
 export type DailySales = {
@@ -37,11 +38,13 @@ export async function completeSale(input: CompleteSaleInput): Promise<void> {
   await db.withTransactionAsync(async () => {
     for (const line of input.items) {
       await db.runAsync(
-        'INSERT INTO sale_items (sale_id, item_id, name, unit_price, quantity, subtotal) VALUES (?, ?, ?, ?, ?, ?)',
+        `INSERT INTO sale_items (sale_id, item_id, name, unit_price, unit_cost, quantity, subtotal)
+         VALUES (?, ?, ?, ?, (SELECT cost FROM items WHERE id = ?), ?, ?)`,
         input.saleId,
         line.itemId,
         line.name,
         line.unitPrice,
+        line.itemId,
         line.quantity,
         line.unitPrice * line.quantity
       );
@@ -64,6 +67,15 @@ export async function completeSale(input: CompleteSaleInput): Promise<void> {
       new Date().toISOString(),
       input.saleId
     );
+
+    if (input.debtor) {
+      await db.runAsync(
+        'INSERT INTO credit_entries (debtor, amount, created_at) VALUES (?, ?, ?)',
+        input.debtor,
+        input.total,
+        new Date().toISOString()
+      );
+    }
   });
 }
 

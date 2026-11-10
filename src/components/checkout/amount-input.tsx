@@ -71,6 +71,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
+    minWidth: 0,
     fontSize: 34,
     fontWeight: '700',
     color: '#0F172A',

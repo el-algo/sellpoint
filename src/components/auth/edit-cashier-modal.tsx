@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Keyboard,
   Modal,
   Platform,
@@ -35,6 +34,7 @@ export default function EditCashierModal({ visible, user, onClose, onSave, onDel
   const [confirm, setConfirm] = useState('');
   const [error, setError] = useState<string | undefined>();
   const [busy, setBusy] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   // Carga los datos del cajero cada vez que se abre el modal.
@@ -45,6 +45,7 @@ export default function EditCashierModal({ visible, user, onClose, onSave, onDel
       setConfirm('');
       setError(undefined);
       setBusy(false);
+      setConfirmingDelete(false);
     }
   }, [visible, user]);
 
@@ -100,31 +101,16 @@ export default function EditCashierModal({ visible, user, onClose, onSave, onDel
     }
   };
 
-  const handleDelete = () => {
-    if (!user) return;
-
-    Alert.alert(
-      'Eliminar cajero',
-      `¿Seguro que quieres eliminar a ${user.name}? Esta acción no se puede deshacer.`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Eliminar',
-          style: 'destructive',
-          onPress: async () => {
-            setBusy(true);
-            setError(undefined);
-            try {
-              await onDelete();
-            } catch {
-              setError('No se pudo eliminar, intenta de nuevo');
-            } finally {
-              setBusy(false);
-            }
-          },
-        },
-      ]
-    );
+  const handleDelete = async () => {
+    setBusy(true);
+    setError(undefined);
+    try {
+      await onDelete();
+    } catch {
+      setError('No se pudo eliminar, intenta de nuevo');
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -200,35 +186,69 @@ export default function EditCashierModal({ visible, user, onClose, onSave, onDel
 
             {error && <Text style={styles.error}>{error}</Text>}
 
-            <View style={styles.actions}>
-              <Pressable
-                style={[styles.button, styles.cancel]}
-                onPress={onClose}
-                disabled={busy}
-              >
-                <Text style={styles.cancelText}>Cancelar</Text>
-              </Pressable>
+            {confirmingDelete ? (
+              <>
+                <Text style={styles.confirmText}>
+                  ¿Seguro que quieres eliminar a {user?.name}? Esta acción no se puede deshacer.
+                </Text>
 
-              <Pressable
-                style={[styles.button, styles.save, busy && styles.disabled]}
-                onPress={handleSave}
-                disabled={busy}
-              >
-                {busy ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text style={styles.saveText}>Guardar</Text>
-                )}
-              </Pressable>
-            </View>
+                <View style={styles.actions}>
+                  <Pressable
+                    style={[styles.button, styles.cancel]}
+                    onPress={() => setConfirmingDelete(false)}
+                    disabled={busy}
+                  >
+                    <Text style={styles.cancelText}>Cancelar</Text>
+                  </Pressable>
 
-            <Pressable
-              style={[styles.button, styles.delete, busy && styles.disabled]}
-              onPress={handleDelete}
-              disabled={busy}
-            >
-              <Text style={styles.deleteText}>Eliminar cajero</Text>
-            </Pressable>
+                  <Pressable
+                    style={[styles.button, styles.delete, busy && styles.disabled]}
+                    onPress={handleDelete}
+                    disabled={busy}
+                  >
+                    {busy ? (
+                      <ActivityIndicator color="#fff" />
+                    ) : (
+                      <Text style={styles.deleteText}>Sí, eliminar</Text>
+                    )}
+                  </Pressable>
+                </View>
+              </>
+            ) : (
+              <>
+                <View style={styles.actions}>
+                  <Pressable
+                    style={[styles.button, styles.cancel]}
+                    onPress={onClose}
+                    disabled={busy}
+                  >
+                    <Text style={styles.cancelText}>Cancelar</Text>
+                  </Pressable>
+
+                  <Pressable
+                    style={[styles.button, styles.save, busy && styles.disabled]}
+                    onPress={handleSave}
+                    disabled={busy}
+                  >
+                    {busy ? (
+                      <ActivityIndicator color="#fff" />
+                    ) : (
+                      <Text style={styles.saveText}>Guardar</Text>
+                    )}
+                  </Pressable>
+                </View>
+
+                <View style={styles.actions}>
+                  <Pressable
+                    style={[styles.button, styles.delete, busy && styles.disabled]}
+                    onPress={() => setConfirmingDelete(true)}
+                    disabled={busy}
+                  >
+                    <Text style={styles.deleteText}>Eliminar cajero</Text>
+                  </Pressable>
+                </View>
+              </>
+            )}
           </View>
         </ScrollView>
       </View>
@@ -315,16 +335,18 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#fff',
   },
+  confirmText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#0F172A',
+  },
   delete: {
-    flex: 0,
-    borderWidth: 1,
-    borderColor: '#FECACA',
-    backgroundColor: '#FEF2F2',
+    backgroundColor: '#DC2626',
   },
   deleteText: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#DC2626',
+    color: '#fff',
   },
   disabled: {
     opacity: 0.6,

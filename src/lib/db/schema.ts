@@ -43,5 +43,61 @@ export async function createTables(db: SQLiteDatabase): Promise<void> {
       quantity REAL NOT NULL,
       subtotal REAL NOT NULL
     );
+
+    -- Movimientos de fiado: amount > 0 es un cargo, amount < 0 es un abono.
+    CREATE TABLE IF NOT EXISTS credit_entries (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      debtor TEXT NOT NULL COLLATE NOCASE,
+      amount REAL NOT NULL,
+      created_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS cash_closings (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      closed_at TEXT NOT NULL,
+      expected REAL NOT NULL,
+      counted REAL NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS expenses (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      concept TEXT NOT NULL,
+      amount REAL NOT NULL,
+      created_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS purchases (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      supplier TEXT NOT NULL,
+      invoice TEXT NOT NULL,
+      total REAL NOT NULL,
+      created_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS purchase_items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      purchase_id INTEGER NOT NULL REFERENCES purchases(id),
+      item_id INTEGER NOT NULL REFERENCES items(id),
+      quantity REAL NOT NULL,
+      unit_cost REAL NOT NULL
+    );
   `);
+
+  await addColumn(db, 'items', 'barcode', 'TEXT');
+  await addColumn(db, 'items', 'unit', "TEXT NOT NULL DEFAULT 'pza'");
+  await addColumn(db, 'items', 'cost', 'REAL NOT NULL DEFAULT 0');
+  await addColumn(db, 'items', 'low_stock', 'REAL NOT NULL DEFAULT 5');
+  await addColumn(db, 'sale_items', 'unit_cost', 'REAL NOT NULL DEFAULT 0');
+}
+
+// CREATE TABLE IF NOT EXISTS no modifica tablas de bases ya instaladas.
+async function addColumn(
+  db: SQLiteDatabase,
+  table: string,
+  column: string,
+  definition: string
+): Promise<void> {
+  const columns = await db.getAllAsync<{ name: string }>(`PRAGMA table_info(${table})`);
+  if (columns.some((c) => c.name === column)) return;
+  await db.execAsync(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
 }

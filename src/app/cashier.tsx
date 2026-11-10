@@ -5,11 +5,12 @@ import Button from '@/components/ui/button';
 import ActionCard from '@/components/ui/action-card';
 import { Icon } from '@/components/ui/icon';
 import { useCurrentUser, signOut } from '@/lib/stores/session-store';
+import { useLowStockCount } from '@/lib/hooks/use-low-stock-count';
 
 export default function Cashier() {
   const router = useRouter();
   const user = useCurrentUser();
-  const lowStockCount = 7;
+  const lowStockCount = useLowStockCount();
 
   const handleLogout = () => {
     signOut();
@@ -19,6 +20,7 @@ export default function Cashier() {
   return (
     <Screen
       title={`Hola, ${user?.name ?? ''}`}
+      showBack={false}
       headerRight={
         <Pressable
           style={({ pressed }) => [styles.logoutButton, pressed && styles.logoutButtonPressed]}
@@ -31,18 +33,23 @@ export default function Cashier() {
     >
       <Text style={styles.shiftStatus}>Turno abierto</Text>
 
-      <Pressable style={styles.alert} onPress={() => router.push('/inventory')}>
-        <View style={styles.alertIcon}>
-          <Icon name="triangle-exclamation" size={18} color="#B45309" />
-        </View>
-        <Text style={styles.alertText}>{lowStockCount} productos por acabarse</Text>
-      </Pressable>
+      {lowStockCount > 0 && (
+        <Pressable style={styles.alert} onPress={() => router.push('/inventory')}>
+          <View style={styles.alertIcon}>
+            <Icon name="triangle-exclamation" size={18} color="#B45309" />
+          </View>
+          <Text style={styles.alertText}>
+            {lowStockCount} producto{lowStockCount === 1 ? '' : 's'} por acabarse
+          </Text>
+        </Pressable>
+      )}
 
       <View style={styles.grid}>
         <ActionCard label="Fiados" icon="receipt" href="/credit" />
         <ActionCard label="Calculadora" icon="calculator" href="/calculator" />
         <ActionCard label="Corte de caja" icon="cash-register" href="/cash-count" />
         <ActionCard label="Buscar precio" icon="magnifying-glass" href="/price-lookup" />
+        <ActionCard label="Retiros y gastos" icon="money-bill-wave" href="/expenses" />
       </View>
 
       <Button label="Nueva venta" href="/sale" icon="cart-shopping" />

@@ -8,21 +8,11 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import Screen from '@/components/ui/screen';
 import SuccessBadge from '@/components/ui/success-badge';
-import ProductModal from '@/components/inventory/product-modal';
-import {
-  initDatabase,
-  getAllItems,
-  createItem,
-  updateItem,
-  deleteItem,
-  type GroceryItem,
-  type NewItem,
-} from '@/lib/db';
+import { initDatabase, getAllItems, type GroceryItem } from '@/lib/db';
 
-const LOW_STOCK = 5; // a partir de aquí se marca "Poco stock"
 const EXPIRING_DAYS = 7; // a partir de aquí se marca "Caduca pronto"
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
@@ -55,7 +45,7 @@ function getTags(item: GroceryItem): Tag[] {
 
   if (item.quantity <= 0) {
     tags.push({ label: 'Agotado', ...RED });
-  } else if (item.quantity <= LOW_STOCK) {
+  } else if (item.quantity <= item.low_stock) {
     tags.push({ label: 'Poco stock', ...AMBER });
   }
 
@@ -73,13 +63,10 @@ function getTags(item: GroceryItem): Tag[] {
 }
 
 export default function Inventory() {
+  const router = useRouter();
   const [items, setItems] = useState<GroceryItem[] | null>(null);
   const [error, setError] = useState<string | undefined>();
   const [query, setQuery] = useState('');
-
-  // Se guardan por separado para que el modal no se vacíe durante la animación de cierre.
-  const [editingItem, setEditingItem] = useState<GroceryItem | null>(null);
-  const [modalVisible, setModalVisible] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -104,33 +91,6 @@ export default function Inventory() {
     }, [])
   );
 
-  const reload = async () => {
-    setItems(await getAllItems());
-  };
-
-  const openModal = (item: GroceryItem | null) => {
-    setEditingItem(item);
-    setModalVisible(true);
-  };
-
-  // Si alguna de estas funciones lanza un error, el modal lo muestra y se queda abierto.
-  const handleSave = async (data: NewItem) => {
-    if (editingItem) {
-      await updateItem(editingItem.id, data);
-    } else {
-      await createItem(data);
-    }
-    await reload();
-    setModalVisible(false);
-  };
-
-  const handleDelete = async () => {
-    if (!editingItem) return;
-    await deleteItem(editingItem.id);
-    await reload();
-    setModalVisible(false);
-  };
-
   const filtered = useMemo(() => {
     if (!items) return null;
     const q = normalize(query.trim());
@@ -153,7 +113,7 @@ export default function Inventory() {
           color="#D1FAE5"
         />
 
-        <Pressable style={styles.addButton} onPress={() => openModal(null)}>
+        <Pressable style={styles.addButton} onPress={() => router.push('/product')}>
           <Text style={styles.addText}>+ Agregar producto</Text>
         </Pressable>
 
@@ -180,7 +140,13 @@ export default function Inventory() {
             filtered.map((item) => {
               const tags = getTags(item);
               return (
-                <Pressable key={item.id} style={styles.card} onPress={() => openModal(item)}>
+                <Pressable
+                  key={item.id}
+                  style={styles.card}
+                  onPress={() =>
+                    router.push({ pathname: '/product', params: { id: String(item.id) } })
+                  }
+                >
                   <View style={styles.cardTop}>
                     <View style={styles.cardInfo}>
                       <Text style={styles.name}>{item.name}</Text>
@@ -209,14 +175,6 @@ export default function Inventory() {
           )}
         </View>
       </ScrollView>
-
-      <ProductModal
-        visible={modalVisible}
-        item={editingItem}
-        onClose={() => setModalVisible(false)}
-        onSave={handleSave}
-        onDelete={handleDelete}
-      />
     </Screen>
   );
 }

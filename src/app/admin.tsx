@@ -9,11 +9,12 @@ import { Icon } from '@/components/ui/icon';
 import { useCurrentUser, signOut } from '@/lib/stores/session-store';
 import { initDatabase, getSalesTotalByDate, type DailySales } from '@/lib/db';
 import { formatCurrency } from '@/lib/utils/format';
+import { useLowStockCount } from '@/lib/hooks/use-low-stock-count';
 
 export default function Admin() {
   const router = useRouter();
   const user = useCurrentUser();
-  const lowStockCount = 7;
+  const lowStockCount = useLowStockCount();
   const [today, setToday] = useState<DailySales | null>(null);
   const [error, setError] = useState<string | undefined>();
 
@@ -48,6 +49,7 @@ export default function Admin() {
   return (
     <Screen
       title={`Hola, admin ${user?.name ?? ''}`}
+      showBack={false}
       headerRight={
         <Pressable
           style={({ pressed }) => [styles.logoutButton, pressed && styles.logoutButtonPressed]}
@@ -59,6 +61,17 @@ export default function Admin() {
       }
     >
       <Text style={styles.shiftStatus}>Turno abierto</Text>
+
+      {lowStockCount > 0 && (
+        <Pressable style={styles.alert} onPress={() => router.push('/inventory')}>
+          <View style={styles.alertIcon}>
+            <Icon name="triangle-exclamation" size={18} color="#B45309" />
+          </View>
+          <Text style={styles.alertText}>
+            {lowStockCount} producto{lowStockCount === 1 ? '' : 's'} por acabarse
+          </Text>
+        </Pressable>
+      )}
 
       <View style={styles.grid}>
         <Text>Venta de hoy:</Text>
@@ -75,17 +88,11 @@ export default function Admin() {
 
       <View style={styles.grid}>
         <ActionCard label="Fiados" icon="receipt" href="/credit" />
-        <ActionCard label="Entrada de mercancia" icon="truck" href="" />
-        <ActionCard label="Reportes" icon="chart-simple" href="" />
-        <ActionCard label="Productos" icon="barcode" href="" />
+        <ActionCard label="Entrada de mercancia" icon="truck" href="/goods-receipt" />
+        <ActionCard label="Reportes" icon="chart-simple" href="/reports" />
+        <ActionCard label="Productos" icon="barcode" href="/inventory" />
+        <ActionCard label="Retiros y gastos" icon="money-bill-wave" href="/expenses" />
       </View>
-
-      <Pressable style={styles.alert} onPress={() => router.push('/inventory')}>
-        <View style={styles.alertIcon}>
-          <Icon name="triangle-exclamation" size={18} color="#B45309" />
-        </View>
-        <Text style={styles.alertText}>{lowStockCount} productos por acabarse</Text>
-      </Pressable>
 
       <Button label="Administrar cajeros" icon="users-line" href="/users" />
     </Screen>

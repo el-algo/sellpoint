@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { StyleSheet, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { StyleSheet, KeyboardAvoidingView, Platform, Alert, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import Screen from '@/components/ui/screen';
 import SegmentedControl from '@/components/ui/segmented-control';
@@ -7,6 +7,7 @@ import AmountInput from '@/components/checkout/amount-input';
 import QuickAmounts from '@/components/checkout/quick-amounts';
 import ChangeDisplay from '@/components/checkout/change-display';
 import Button from '@/components/ui/button';
+import TextField from '@/components/ui/text-field';
 import { formatCurrency, saleTotal, type PaymentMethod } from '@/lib/utils/format';
 import { useSaleItems, useCurrentSaleId } from '@/lib/stores/sale-store';
 import { completeSale } from '@/lib/db';
@@ -25,13 +26,20 @@ export default function Checkout() {
 
   const [method, setMethod] = useState<PaymentMethod>('efectivo');
   const [received, setReceived] = useState('');
+  const [debtor, setDebtor] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const receivedValue = parseFloat(received) || 0;
   const change = useMemo(() => receivedValue - total, [receivedValue, total]);
   const isCash = method === 'efectivo';
+  const isCredit = method === 'fiado';
+  const debtorName = debtor.trim();
   const canFinish =
-    !submitting && saleId != null && items.length > 0 && (!isCash || receivedValue >= total);
+    !submitting &&
+    saleId != null &&
+    items.length > 0 &&
+    (!isCash || receivedValue >= total) &&
+    (!isCredit || debtorName !== '');
 
   const finish = async () => {
     if (!saleId || submitting) return;
@@ -51,6 +59,7 @@ export default function Checkout() {
         method,
         received: isCash ? receivedValue : undefined,
         change: isCash ? change : undefined,
+        debtor: isCredit ? debtorName : undefined,
       });
 
       router.replace({
@@ -86,6 +95,20 @@ export default function Checkout() {
               onSelect={(amount) => setReceived((current) => String((parseFloat(current) || 0) + amount))}
             />
             <ChangeDisplay change={change} insufficient={change < 0} />
+          </>
+        )}
+
+        {isCredit && (
+          <>
+            <TextField
+              label="Nombre del deudor"
+              value={debtor}
+              onChangeText={setDebtor}
+              placeholder="Ej. Don Beto (taller)"
+              autoCapitalize="words"
+              maxLength={60}
+            />
+            <View style={styles.flex} />
           </>
         )}
 

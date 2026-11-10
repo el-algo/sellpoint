@@ -5,6 +5,7 @@ export type ReceiptLine = {
   label: string;
   value: string;
   divider?: boolean;
+  strong?: boolean;
 };
 
 type Props = {
@@ -18,10 +19,10 @@ export default function ReceiptCard({ lines }: Props) {
         <Fragment key={`${line.label}-${index}`}>
           {line.divider && <View style={styles.divider} />}
           <View style={styles.row}>
-            <Text style={styles.label} numberOfLines={1}>
+            <Text style={[styles.label, line.strong && styles.strongLabel]} numberOfLines={1}>
               {line.label}
             </Text>
-            <Text style={styles.value}>{line.value}</Text>
+            <Text style={[styles.value, line.strong && styles.strongValue]}>{line.value}</Text>
           </View>
         </Fragment>
       ))}
@@ -59,5 +60,13 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 15,
     color: '#0F172A',
+  },
+  strongLabel: {
+    fontWeight: '700',
+    color: '#0F172A',
+  },
+  strongValue: {
+    fontSize: 20,
+    fontWeight: '800',
   },
 });
