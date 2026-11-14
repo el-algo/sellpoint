@@ -20,6 +20,12 @@ Busca aquí el mensaje que ves en la pantalla.
 
 **Solución:** Toca tu nombre en la lista y luego escribe el NIP.
 
+### El teclado tapa la pantalla y no se quita
+
+**Causa:** El teclado de números no tiene botón para cerrarlo.
+
+**Solución:** Toca cualquier parte vacía de la pantalla, fuera del teclado. El teclado se esconde y puedes seguir.
+
 ## En la venta
 
 ### El botón Cobrar está gris

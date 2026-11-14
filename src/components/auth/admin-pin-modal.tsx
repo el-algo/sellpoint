@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Keyboard, Modal, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import PinInput, { PIN_LENGTH } from '@/components/auth/pin-input';
 import { Icon, type IconName } from '@/components/ui/icon';
 import { verifyAdminPin } from '@/lib/db';
@@ -53,7 +53,8 @@ export default function AdminPinModal({ visible, action, icon, tone, onCancel, o
 
   return (
     <Modal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onCancel}>
-      <View style={styles.backdrop}>
+      {/* Modals render outside Screen, so they need their own tap-outside-to-hide-keyboard. */}
+      <Pressable style={styles.backdrop} onPress={Platform.OS === 'web' ? undefined : Keyboard.dismiss} accessible={false} focusable={false}>
         <View style={styles.card}>
           <View style={[styles.iconCircle, { backgroundColor: colors.background }]}>
             <Icon name={icon} size={22} color={colors.color} />
@@ -89,7 +90,7 @@ export default function AdminPinModal({ visible, action, icon, tone, onCancel, o
             </Pressable>
           </View>
         </View>
-      </View>
+      </Pressable>
     </Modal>
   );
 }

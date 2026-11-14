@@ -51,3 +51,4 @@ La cajera solo puede ver esta lista. Para agregar o cambiar productos hay que en
 - **Buscar**: los campos **Buscar producto...** encuentran productos por una parte del nombre o por el código de barras completo.
 - **Cantidades de dinero**: escribe solo números, con punto para los centavos, por ejemplo `25.50`.
 - **Botones grises**: un botón gris todavía no se puede usar. Normalmente falta llenar un dato.
+- **Esconder el teclado**: toca cualquier parte vacía de la pantalla, fuera del teclado, para esconderlo.

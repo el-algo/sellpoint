@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, View, Text, Pressable, type ViewStyle } from 'react-native';
+import { StyleSheet, View, Text, Pressable, Keyboard, Platform, type ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Icon } from '@/components/ui/icon';
@@ -39,7 +39,14 @@ export default function Screen({
         </View>
       )}
 
-      <View style={[styles.body, contentStyle]}>{children}</View>
+      {/* Tapping any empty area hides the keyboard; skipped on web, where a click would blur the input just focused. */}
+      {Platform.OS === 'web' ? (
+        <View style={[styles.body, contentStyle]}>{children}</View>
+      ) : (
+        <Pressable style={[styles.body, contentStyle]} onPress={Keyboard.dismiss} accessible={false}>
+          {children}
+        </Pressable>
+      )}
     </SafeAreaView>
   );
 }
