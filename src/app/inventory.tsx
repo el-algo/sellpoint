@@ -8,6 +8,7 @@ import SectionTitle from '@/components/ui/section-title';
 import { card } from '@/components/ui/theme';
 import { initDatabase, getAllItems, type GroceryItem } from '@/lib/db';
 import { formatCurrency } from '@/lib/utils/format';
+import { useCurrentUser, isAdmin } from '@/lib/stores/session-store';
 
 const EXPIRING_DAYS = 7; // a partir de aquí se marca "Caduca pronto"
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -58,6 +59,8 @@ function getTags(item: GroceryItem): Tag[] {
 
 export default function Inventory() {
   const router = useRouter();
+  // La cajera llega aquí desde el aviso de productos por acabarse: solo puede ver.
+  const canEdit = isAdmin(useCurrentUser());
   const [items, setItems] = useState<GroceryItem[] | null>(null);
   const [error, setError] = useState<string | undefined>();
   const [query, setQuery] = useState('');
@@ -113,6 +116,7 @@ export default function Inventory() {
               const tags = getTags(item);
               return (
                 <Pressable
+                  disabled={!canEdit}
                   style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
                   onPress={() =>
                     router.push({ pathname: '/product', params: { id: String(item.id) } })
@@ -155,7 +159,7 @@ export default function Inventory() {
         </>
       )}
 
-      <Button label="+ Agregar producto" href="/product" />
+      {canEdit && <Button label="+ Agregar producto" href="/product" />}
     </Screen>
   );
 }

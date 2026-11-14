@@ -38,7 +38,7 @@ export async function getCashCount(): Promise<CashCount> {
     since
   );
   const credit = await db.getFirstAsync<{ total: number }>(
-    'SELECT COALESCE(-SUM(amount), 0) AS total FROM credit_entries WHERE amount < 0 AND created_at > ?',
+    "SELECT COALESCE(-SUM(amount), 0) AS total FROM credit_entries WHERE amount < 0 AND method = 'efectivo' AND created_at > ?",
     since
   );
   const expenses = await db.getFirstAsync<{ total: number }>(

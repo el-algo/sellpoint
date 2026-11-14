@@ -19,12 +19,19 @@ export async function getDebtors(): Promise<Debtor[]> {
   );
 }
 
-export async function registerPayment(debtor: string, amount: number): Promise<void> {
+export type PaymentMethodForCredit = 'efectivo' | 'transferencia';
+
+export async function registerPayment(
+  debtor: string,
+  amount: number,
+  method: PaymentMethodForCredit
+): Promise<void> {
   const db = await getDatabase();
   await db.runAsync(
-    'INSERT INTO credit_entries (debtor, amount, created_at) VALUES (?, ?, ?)',
+    'INSERT INTO credit_entries (debtor, amount, created_at, method) VALUES (?, ?, ?, ?)',
     debtor,
     -amount,
-    new Date().toISOString()
+    new Date().toISOString(),
+    method
   );
 }

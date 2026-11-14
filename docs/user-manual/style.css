@@ -1,0 +1,761 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wdth,wght@0,75..100,300..800;1,75..100,300..800&display=swap");
+
+/* ==========================================================================
+   Boxed owner's-manual theme
+   Black, white, and one blue accent. Open Sans throughout, with the
+   condensed width (font-stretch 75%) for titles and headings.
+   Heavy rules and boxed panels, in the spirit of classic appliance manuals.
+
+   Change the blue in one place: --brand below, or "theme.brand" in manual.json.
+
+   Fonts: Open Sans (variable weight and width) ships in fonts/ next to this
+   file, so the condensed headings render the same offline. If fonts/ is
+   missing, Google Fonts (the @import above) is tried, then Arial.
+   Open Sans is under the SIL Open Font License, see fonts/OFL.txt.
+   ========================================================================== */
+
+@font-face {
+  font-family: "Open Sans Manual";
+  font-style: normal;
+  font-weight: 300 800;
+  font-stretch: 75% 100%;
+  font-display: block;
+  src: url("fonts/open-sans-latin-wdth-normal.woff2") format("woff2-variations"),
+       url("fonts/open-sans-latin-wdth-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Open Sans Manual";
+  font-style: normal;
+  font-weight: 300 800;
+  font-stretch: 75% 100%;
+  font-display: block;
+  src: url("fonts/open-sans-latin-ext-wdth-normal.woff2") format("woff2-variations"),
+       url("fonts/open-sans-latin-ext-wdth-normal.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Open Sans Manual";
+  font-style: italic;
+  font-weight: 300 800;
+  font-stretch: 75% 100%;
+  font-display: block;
+  src: url("fonts/open-sans-latin-wdth-italic.woff2") format("woff2-variations"),
+       url("fonts/open-sans-latin-wdth-italic.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Open Sans Manual";
+  font-style: italic;
+  font-weight: 300 800;
+  font-stretch: 75% 100%;
+  font-display: block;
+  src: url("fonts/open-sans-latin-ext-wdth-italic.woff2") format("woff2-variations"),
+       url("fonts/open-sans-latin-ext-wdth-italic.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+  --brand: #0a4fbf;           /* the only accent color */
+  --black: #000;
+  --white: #fff;
+
+  --font-body: "Open Sans Manual", "Open Sans", Arial, Helvetica, sans-serif;
+  --font-mono: "Consolas", "Liberation Mono", "Courier New", monospace;
+
+  --rule-heavy: 4px;
+  --rule: 2px;
+  --rule-thin: 1px;
+
+  --sidebar-w: 290px;
+  --content-w: 780px;
+}
+
+/* --------------------------------------------------------------- base ---- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 1.25rem; }
+
+body {
+  margin: 0;
+  background: var(--white);
+  color: var(--black);
+  font-family: var(--font-body);
+  font-size: 15.5px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--brand); color: var(--white); }
+
+a { color: var(--brand); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:hover { text-decoration-thickness: 2px; }
+a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.skip-link { position: absolute; left: -9999px; }
+.skip-link:focus {
+  left: 1rem; top: 1rem; z-index: 10;
+  background: var(--white); border: var(--rule) solid var(--black); padding: .5rem 1rem;
+}
+
+/* ------------------------------------------------------------- layout ---- */
+
+.layout {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+main {
+  padding: 2.5rem clamp(1rem, 4vw, 3.5rem) 6rem;
+  max-width: calc(var(--content-w) + 7rem);
+  width: 100%;
+  counter-reset: chapter fig;
+}
+
+/* ------------------------------------------------------------ sidebar ---- */
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 1.5rem 1.25rem 3rem;
+  background: var(--white);
+  border-right: var(--rule-heavy) solid var(--black);
+  font-size: 14px;
+  line-height: 1.4;
+  counter-reset: toc;
+}
+
+.sidebar-title {
+  display: block;
+  font-weight: 800;
+  font-stretch: 75%;
+  font-size: 22px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: .01em;
+  color: var(--black);
+  text-decoration: none;
+  padding-bottom: .6rem;
+  margin-bottom: 1rem;
+  border-bottom: var(--rule-heavy) solid var(--black);
+}
+
+.toc-search {
+  width: 100%;
+  font: inherit;
+  color: var(--black);
+  padding: .5rem .65rem;
+  border: var(--rule) solid var(--black);
+  border-radius: 0;
+  background: var(--white);
+  margin-bottom: 1.1rem;
+}
+.toc-search::placeholder { color: var(--black); opacity: .55; }
+.toc-search:focus { outline: 3px solid var(--brand); outline-offset: 0; }
+
+.toc, .toc ol { list-style: none; margin: 0; padding: 0; }
+.toc > li { counter-increment: toc; margin: 0 0 .7rem; }
+.toc a {
+  display: block;
+  color: var(--black);
+  text-decoration: none;
+  padding: .2rem .45rem;
+}
+.toc > li > a {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 12.5px;
+  letter-spacing: .04em;
+  border-bottom: var(--rule-thin) solid var(--black);
+}
+.toc > li > a::before {
+  content: counter(toc) ".";
+  display: inline-block;
+  min-width: 1.6em;
+  color: var(--brand);
+}
+.toc ol { margin: .3rem 0 0 1.6em; }
+.toc ol a { font-size: 13.5px; }
+.toc a:hover { text-decoration: underline; }
+.toc a.is-active { background: var(--brand); color: var(--white); }
+.toc > li > a.is-active::before { color: var(--white); }
+.is-hidden { display: none; }
+
+/* -------------------------------------------------------------- cover ---- */
+/* A narrow boxed panel on the left (manual type, version, audience),
+   a framed panel on the right (logo or product name), and a ruled
+   footer line with the organization. */
+
+.cover {
+  display: grid;
+  grid-template-columns: minmax(0, 36%) minmax(0, 1fr);
+  grid-template-rows: auto auto 1fr auto;
+  grid-template-areas:
+    "sub   logo"
+    "meta  logo"
+    "aud   title"
+    "org   org";
+  column-gap: 1.75rem;
+  min-height: 560px;
+  container-type: inline-size;
+  margin: 0 0 3rem;
+}
+
+/* Left panel: three stacked cells drawn as one box. */
+.cover-subtitle, .cover-meta, .cover-audience {
+  margin: 0;
+  padding: 0 1.25rem;
+  border-left: var(--rule-heavy) solid var(--black);
+  border-right: var(--rule-heavy) solid var(--black);
+}
+.cover-subtitle {
+  grid-area: sub;
+  border-top: var(--rule-heavy) solid var(--black);
+  padding-top: 3rem;
+  font-weight: 700;
+  font-size: 2rem;
+  line-height: 1.12;
+  text-transform: uppercase;
+  color: var(--black);
+}
+.cover-meta {
+  grid-area: meta;
+  padding-top: 1.75rem;
+  font-size: 1rem;
+  line-height: 1.4;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.cover-audience {
+  grid-area: aud;
+  display: flex;
+  align-items: flex-end;
+  border-bottom: var(--rule-heavy) solid var(--black);
+  padding-top: 2rem;
+  padding-bottom: 1.5rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+  line-height: 1.3;
+  color: var(--brand);
+}
+
+/* Right panel: logo in a frame, product name below it. */
+.cover-logo {
+  grid-area: logo;
+  width: 100%;
+  height: 320px;
+  object-fit: contain;
+  padding: 2rem;
+  border: var(--rule-heavy) solid var(--black);
+}
+.cover-title {
+  grid-area: title;
+  align-self: start;
+  margin: 1.5rem 0 0;
+  font-weight: 800;
+  font-stretch: 75%;
+  /* --title-chars (set by the build) is the longest word in the title: a long
+     single word shrinks the title instead of breaking mid-word. */
+  font-size: min(4rem, 10cqi, calc(105cqi / var(--title-chars, 10)));
+  line-height: .95;
+  overflow-wrap: break-word;
+  letter-spacing: .01em;
+  text-transform: uppercase;
+  color: var(--black);
+}
+.cover-title::after {
+  content: "";
+  display: block;
+  width: 5.5rem;
+  height: 10px;
+  margin-top: 1rem;
+  background: var(--brand);
+}
+
+/* No logo: the product name fills the framed right panel instead. */
+.cover:not(:has(.cover-logo)) {
+  grid-template-areas:
+    "sub   title"
+    "meta  title"
+    "aud   title"
+    "org   org";
+}
+.cover:not(:has(.cover-logo)) .cover-title {
+  align-self: stretch;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 2rem;
+  border: var(--rule-heavy) solid var(--black);
+  font-size: min(5rem, 7.5cqi, calc(88cqi / var(--title-chars, 10)));
+}
+
+/* Bottom line: organization between two rules. */
+.cover-org {
+  grid-area: org;
+  margin: 1.75rem 0 0;
+  padding: .45rem 0;
+  border-top: var(--rule-thin) solid var(--black);
+  border-bottom: var(--rule-heavy) solid var(--black);
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .01em;
+}
+
+.print-toc { display: none; }
+
+/* ---------------------------------------------------------- headings ---- */
+
+h1, h2, h3, h4 { color: var(--black); line-height: 1.2; }
+
+.chapter { counter-increment: chapter; padding-top: .5rem; }
+.chapter + .chapter { margin-top: 4rem; }
+
+/* Chapter title: number in a blue box, condensed caps, heavy double rule. */
+.chapter h1 {
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+  margin: 0 0 1.5rem;
+  padding: .7rem 0 .55rem;
+  border-top: var(--rule-heavy) solid var(--black);
+  border-bottom: var(--rule) solid var(--black);
+  font-weight: 800;
+  font-stretch: 75%;
+  font-size: 2.4rem;
+  text-transform: uppercase;
+  letter-spacing: .01em;
+}
+.chapter h1::before {
+  content: counter(chapter);
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.2rem;
+  height: 3.2rem;
+  padding: 0 .4rem;
+  background: var(--brand);
+  color: var(--white);
+  font-size: 1.9rem;
+  font-stretch: 100%;
+}
+
+.chapter h2 {
+  margin: 2.6rem 0 .9rem;
+  padding-bottom: .3rem;
+  border-bottom: var(--rule) solid var(--black);
+  font-weight: 800;
+  font-stretch: 75%;
+  font-size: 1.6rem;
+  text-transform: uppercase;
+  letter-spacing: .015em;
+}
+
+.chapter h3 {
+  margin: 1.8rem 0 .55rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.chapter h3::before {
+  content: "";
+  display: inline-block;
+  width: .6em;
+  height: .6em;
+  margin-right: .5em;
+  background: var(--brand);
+  vertical-align: .05em;
+}
+
+.chapter h4 {
+  margin: 1.4rem 0 .4rem;
+  font-size: .95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+p, ul, ol, dl, figure, .callout, .table-wrap, pre { margin: 0 0 1rem; }
+
+.chapter h1 + p, .chapter h2 + p { font-size: 1.05em; }
+
+/* ------------------------------------------------------------- steps ---- */
+/* Ordered lists are task steps: blue square badges with white numbers. */
+
+.chapter ol {
+  list-style: none;
+  counter-reset: step;
+  padding-left: 0;
+}
+.chapter ol > li {
+  counter-increment: step;
+  position: relative;
+  padding-left: 2.75rem;
+  margin-bottom: .75rem;
+  min-height: 1.9rem;
+}
+.chapter ol > li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: .02rem;
+  width: 1.85rem;
+  height: 1.85rem;
+  background: var(--brand);
+  color: var(--white);
+  font-weight: 800;
+  font-size: .95rem;
+  line-height: 1.85rem;
+  text-align: center;
+}
+
+/* Sub-steps: white boxes outlined in black, lettered. */
+.chapter ol ol { counter-reset: substep; margin: .55rem 0; }
+.chapter ol ol > li { counter-increment: substep; padding-left: 2rem; min-height: 0; margin-bottom: .4rem; }
+.chapter ol ol > li::before {
+  content: counter(substep, lower-alpha);
+  width: 1.4rem;
+  height: 1.4rem;
+  line-height: calc(1.4rem - 4px);
+  background: var(--white);
+  color: var(--black);
+  border: var(--rule) solid var(--black);
+  font-size: .8rem;
+}
+.chapter li > p { margin-bottom: .5rem; }
+.chapter li > figure, .chapter li > .callout { margin-top: .8rem; }
+
+.chapter ul { padding-left: 1.25rem; list-style: square; }
+.chapter ul li { margin-bottom: .3rem; }
+.chapter ul li::marker { color: var(--black); }
+
+/* Task lists ("- [ ]" / "- [x]"): a checkbox glyph instead of the square. */
+.chapter ul li.task { list-style: none; margin-left: -1.25rem; }
+.task-box { color: var(--brand); font-weight: 800; margin-right: .15em; }
+
+/* ----------------------------------------------------------- callouts ---- */
+/* Boxed panels with a solid title band.
+   Blue band: note, tip, important.  Black band with "!" badge: warning, caution. */
+
+.callout {
+  border: var(--rule) solid var(--black);
+  background: var(--white);
+  padding: 0 1rem .85rem;
+}
+.callout > :last-child { margin-bottom: 0; }
+.callout-title {
+  margin: 0 -1rem .7rem !important;
+  padding: .35rem 1rem;
+  background: var(--brand);
+  color: var(--white);
+  font-weight: 800;
+  font-size: .85rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.callout ul { padding-left: 1.2rem; margin-bottom: 0; list-style: square; }
+
+.callout-tip .callout-title {
+  background: var(--white);
+  color: var(--brand);
+  border-bottom: var(--rule) solid var(--black);
+}
+.callout-important { border-color: var(--brand); border-width: 3px; }
+
+.callout-warning, .callout-caution { border-width: 3px; }
+.callout-warning .callout-title,
+.callout-caution .callout-title { background: var(--black); }
+.callout-warning .callout-title::before,
+.callout-caution .callout-title::before {
+  content: "!";
+  display: inline-block;
+  width: 1.35em;
+  margin-right: .6em;
+  background: var(--white);
+  color: var(--black);
+  text-align: center;
+  font-weight: 800;
+}
+.callout-caution { outline: var(--rule-thin) solid var(--black); outline-offset: 3px; }
+
+blockquote {
+  margin: 0 0 1rem;
+  padding: .2rem 1rem;
+  border-left: var(--rule-heavy) solid var(--black);
+}
+
+/* ----------------------------------------------------- inline elements ---- */
+
+strong { font-weight: 700; }
+
+code {
+  font-family: var(--font-mono);
+  font-size: .9em;
+  padding: 0 .2em;
+  border-bottom: var(--rule-thin) dotted var(--black);
+}
+pre {
+  border: var(--rule) solid var(--black);
+  padding: .9rem 1.1rem;
+  overflow-x: auto;
+  font-size: .88em;
+  line-height: 1.5;
+}
+pre code { border: 0; padding: 0; }
+
+kbd {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: .8em;
+  padding: .05em .45em;
+  border: var(--rule) solid var(--black);
+  background: var(--white);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+hr { border: 0; border-top: var(--rule) solid var(--black); margin: 2rem 0; }
+
+/* ------------------------------------------------------------- tables ---- */
+
+.table-wrap { overflow-x: auto; margin-bottom: 1.25rem; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: var(--rule) solid var(--black);
+  font-size: .93em;
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: .5rem .7rem;
+  border: var(--rule-thin) solid var(--black);
+}
+th {
+  background: var(--black);
+  color: var(--white);
+  font-weight: 700;
+  font-size: .82rem;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+td[align="center"], th[align="center"] { text-align: center; }
+
+/* --------------------------------------------------- definition lists ---- */
+
+dl { border-top: var(--rule) solid var(--black); }
+dl dt {
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: .92rem;
+  letter-spacing: .03em;
+  padding-top: .65rem;
+}
+dl dd {
+  margin: .15rem 0 0;
+  padding: 0 0 .65rem 1.25rem;
+  border-bottom: var(--rule-thin) solid var(--black);
+}
+
+/* ------------------------------------------------------------ figures ---- */
+/* Framed illustrations with numbered captions: "FIG. 1". */
+
+figure { margin: 1.25rem 0 1.5rem; text-align: center; }
+figure img, .chapter img {
+  max-width: 100%;
+  height: auto;
+  border: var(--rule) solid var(--black);
+  background: var(--white);
+}
+figure img[src$=".svg"] { border: 0; }
+figcaption {
+  counter-increment: fig;
+  margin-top: .5rem;
+  font-size: .82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+figcaption::before {
+  content: "Fig. " counter(fig);
+  margin-right: .6em;
+  font-weight: 800;
+  color: var(--brand);
+}
+
+.shot-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .35rem;
+  padding: 2rem 1rem;
+  border: var(--rule) dashed var(--black);
+  background: var(--white);
+  font-size: .9em;
+}
+.shot-placeholder-label {
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--brand);
+}
+.shot-placeholder code { font-size: .8em; border: 0; }
+
+/* ----------------------------------------------------------- footnotes ---- */
+
+.footnote {
+  margin-top: 2rem;
+  padding-top: .5rem;
+  border-top: var(--rule) solid var(--black);
+  font-size: .85em;
+}
+.footnote hr { display: none; }
+/* Footnotes are references, not steps: plain numbers, no badges. */
+.chapter .footnote ol { list-style: decimal; padding-left: 1.5rem; }
+.chapter .footnote ol > li { padding-left: 0; min-height: 0; margin-bottom: .3rem; }
+.chapter .footnote ol > li::before { content: none; }
+
+/* ------------------------------------------------------------ responsive ---- */
+
+@media (max-width: 900px) {
+  .layout { display: block; }
+  .sidebar {
+    position: static;
+    height: auto;
+    max-height: 55vh;
+    border-right: 0;
+    border-bottom: var(--rule-heavy) solid var(--black);
+  }
+}
+
+@media (max-width: 640px) {
+  .cover, .cover:not(:has(.cover-logo)) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    grid-template-areas: "logo" "title" "sub" "meta" "aud" "org";
+    min-height: 0;
+  }
+  .cover-logo { height: 200px; margin-bottom: 1rem; }
+  .cover-title, .cover:not(:has(.cover-logo)) .cover-title { font-size: min(2.8rem, 15cqi, calc(170cqi / var(--title-chars, 10))); margin: 0 0 1.5rem; }
+  .cover:not(:has(.cover-logo)) .cover-title { font-size: min(2.8rem, 15cqi, calc(130cqi / var(--title-chars, 10))); }
+  .cover-subtitle { padding-top: 1.5rem; font-size: 1.5rem; }
+  .chapter h1 { font-size: 1.9rem; }
+}
+
+/* ===================================================================== PRINT
+   Used for the PDF. The page size comes from manual.json. */
+
+@page {
+  margin: 16mm 17mm 20mm;
+  @bottom-right {
+    content: counter(page);
+    font-family: "Open Sans Manual", "Open Sans", Arial, sans-serif;
+    font-size: 9pt;
+    font-weight: 700;
+    color: #000;
+  }
+}
+@page :first {
+  margin: 14mm 15mm;
+  @bottom-right { content: none; }
+}
+
+@media print {
+  html { scroll-behavior: auto; }
+  body { font-size: 10.5pt; line-height: 1.5; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  .sidebar, .skip-link, .toc-search { display: none !important; }
+  .layout { display: block; }
+  main { padding: 0; max-width: none; }
+
+  a { color: inherit; text-decoration: none; }
+  .chapter a[href^="#"] { color: var(--brand); text-decoration: underline; }
+
+  /* Cover fills the first page. */
+  .cover { min-height: 236mm; margin: 0; column-gap: 7mm; break-after: page; }
+  .cover-subtitle { font-size: 24pt; padding-top: 22mm; }
+  .cover-meta { font-size: 11pt; padding-top: 10mm; }
+  .cover-audience { font-size: 13pt; padding-bottom: 12mm; }
+  .cover-logo { height: 105mm; padding: 10mm; }
+  .cover-title { font-size: min(46pt, 10cqi, calc(105cqi / var(--title-chars, 10))); margin-top: 8mm; }
+  .cover:not(:has(.cover-logo)) .cover-title { font-size: min(56pt, 4cqi, calc(84cqi / var(--title-chars, 10))); padding: 10mm; }
+  .cover-org { font-size: 17pt; margin-top: 8mm; }
+
+  /* Contents: one boxed panel. */
+  .print-toc {
+    display: block;
+    break-after: page;
+    border: 3pt solid #000;
+    counter-reset: ptoc;
+  }
+  .print-toc-title {
+    margin: 0;
+    padding: 3mm 6mm;
+    background: #000;
+    color: #fff;
+    font-size: 18pt;
+    font-weight: 800;
+    font-stretch: 75%;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+  }
+  .print-toc-list, .print-toc-list ol { list-style: none; padding: 0; margin: 0; }
+  .print-toc-list { padding: 5mm 6mm 6mm; }
+  .print-toc-list > li {
+    counter-increment: ptoc;
+    margin: 0 0 4mm;
+    padding-bottom: 2mm;
+    border-bottom: 1pt solid #000;
+    break-inside: avoid;
+  }
+  .print-toc-list > li:last-child { border-bottom: 0; margin-bottom: 0; }
+  .print-toc-list > li > a {
+    font-weight: 800;
+    font-size: 11.5pt;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+  }
+  .print-toc-list > li > a::before {
+    content: counter(ptoc);
+    display: inline-block;
+    min-width: 7mm;
+    margin-right: 2mm;
+    background: var(--brand);
+    color: #fff;
+    text-align: center;
+  }
+  .print-toc-list ol { margin: 1.2mm 0 0 9mm; }
+  .print-toc-list ol li { font-size: 9.5pt; margin: .5mm 0; }
+  /* Page numbers in the contents (WeasyPrint only; Chromium ignores this). */
+  .print-toc-list a::after { content: leader(".") target-counter(attr(href), page); }
+
+  /* Every chapter starts on a new page. */
+  .chapter { break-before: page; padding-top: 0; }
+  .chapter + .chapter { margin-top: 0; }
+  .chapter h1 { font-size: 26pt; margin-bottom: 7mm; }
+  .chapter h1::before { min-width: 13mm; height: 13mm; font-size: 20pt; }
+  .chapter h2 { font-size: 16pt; margin-top: 8mm; }
+  .chapter h3 { font-size: 11.5pt; margin-top: 6mm; }
+
+  h1, h2, h3, h4 { break-after: avoid; page-break-after: avoid; }
+  p, li { orphans: 3; widows: 3; }
+  figure, .callout, pre, tr, dt, dd, .shot-placeholder, .chapter ol > li {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  thead { display: table-header-group; }
+  .table-wrap { overflow: visible; }
+
+  figure img { max-height: 115mm; width: auto; }
+}

@@ -13,6 +13,7 @@ import {
   saleTotals,
 } from '@/lib/utils/format';
 import { useSaleItems, useSaleDiscount } from '@/lib/stores/sale-store';
+import { useCurrentUser, isAdmin } from '@/lib/stores/session-store';
 
 const METHOD_LABELS: Record<string, string> = {
   efectivo: 'Efectivo',
@@ -28,6 +29,7 @@ export default function Receipt() {
     received: string;
     change: string;
   }>();
+  const home = isAdmin(useCurrentUser()) ? '/admin' : '/cashier';
   const items = useSaleItems();
   const { discount } = saleTotals(useSaleItems(), useSaleDiscount());
   const date = new Date();
@@ -66,7 +68,7 @@ export default function Receipt() {
 
       <View style={styles.spacer} />
 
-      <Button label="Regresar al inicio" href="/cashier" />
+      <Button label="Regresar al inicio" href={home} />
     </Screen>
   );
 }

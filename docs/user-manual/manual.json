@@ -1,0 +1,32 @@
+{
+  "title": "SellPoint",
+  "subtitle": "Manual de usuario",
+  "version": "1.0",
+  "date": "auto",
+  "lang": "es",
+  "audience": "Para cajeras y dueña de la tienda",
+  "organization": "Abarrotes Doña Mari",
+  "logo": "",
+  "page_size": "Letter",
+  "theme": {
+    "brand": "#15803D",
+    "font": ""
+  },
+  "chapters": [
+    "01-introduccion.md",
+    "02-inicio-rapido.md",
+    "03-conoce-sellpoint.md",
+    "04-ventas.md",
+    "05-fiados-y-gastos.md",
+    "06-corte-de-caja.md",
+    "07-herramientas.md",
+    "08-productos.md",
+    "09-reportes.md",
+    "10-cajeros.md",
+    "11-conceptos.md",
+    "12-solucion-de-problemas.md",
+    "13-glosario.md"
+  ],
+  "copy": ["images", "fonts"],
+  "labels": {}
+}

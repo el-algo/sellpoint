@@ -21,12 +21,21 @@ type Props = {
   onClose: () => void;
   // pin llega como undefined cuando no se quiere cambiar el NIP.
   onSave: (name: string, pin?: string) => Promise<void>;
-  onDelete: () => Promise<void>;
+  // Sin onDelete no se muestra el botón de eliminar (p. ej. cuando la dueña edita sus datos).
+  onDelete?: () => Promise<void>;
+  title?: string;
 };
 
 const onlyDigits = (text: string) => text.replace(/[^0-9]/g, '').slice(0, PIN_LENGTH);
 
-export default function EditCashierModal({ visible, user, onClose, onSave, onDelete }: Props) {
+export default function EditCashierModal({
+  visible,
+  user,
+  onClose,
+  onSave,
+  onDelete,
+  title = 'Editar cajero',
+}: Props) {
   const pinRef = useRef<TextInput>(null);
   const confirmRef = useRef<TextInput>(null);
 
@@ -70,7 +79,7 @@ export default function EditCashierModal({ visible, user, onClose, onSave, onDel
     const trimmed = name.trim();
 
     if (!trimmed) {
-      setError('Escribe el nombre del cajero');
+      setError('Escribe el nombre');
       return;
     }
 
@@ -103,6 +112,7 @@ export default function EditCashierModal({ visible, user, onClose, onSave, onDel
   };
 
   const handleDelete = async () => {
+    if (!onDelete) return;
     setBusy(true);
     setError(undefined);
     try {
@@ -128,7 +138,7 @@ export default function EditCashierModal({ visible, user, onClose, onSave, onDel
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.card}>
-            <Text style={styles.title}>Editar cajero</Text>
+            <Text style={styles.title}>{title}</Text>
 
             <View style={styles.field}>
               <Text style={styles.label}>Nombre</Text>
@@ -239,15 +249,17 @@ export default function EditCashierModal({ visible, user, onClose, onSave, onDel
                   </Pressable>
                 </View>
 
-                <View style={styles.actions}>
-                  <Pressable
-                    style={[styles.button, styles.delete, busy && styles.disabled]}
-                    onPress={() => setConfirmingDelete(true)}
-                    disabled={busy}
-                  >
-                    <Text style={styles.deleteText}>Eliminar cajero</Text>
-                  </Pressable>
-                </View>
+                {onDelete && (
+                  <View style={styles.actions}>
+                    <Pressable
+                      style={[styles.button, styles.delete, busy && styles.disabled]}
+                      onPress={() => setConfirmingDelete(true)}
+                      disabled={busy}
+                    >
+                      <Text style={styles.deleteText}>Eliminar cajero</Text>
+                    </Pressable>
+                  </View>
+                )}
               </>
             )}
           </View>

@@ -13,6 +13,8 @@ import SuccessBadge from '@/components/ui/success-badge';
 import UserCard from '@/components/auth/user-card';
 import AddCashierModal from '@/components/auth/add-cashier-modal';
 import EditCashierModal from '@/components/auth/edit-cashier-modal';
+import SecondaryButton from '@/components/ui/secondary-button';
+import { useCurrentUser, signIn } from '@/lib/stores/session-store';
 import {
   initDatabase,
   getUsersByRole,
@@ -31,6 +33,10 @@ export default function Users() {
   // Se guardan por separado para que el modal no se vacíe durante la animación de cierre.
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [editVisible, setEditVisible] = useState(false);
+
+  // La dueña cambia aquí su propio nombre o NIP.
+  const me = useCurrentUser();
+  const [selfVisible, setSelfVisible] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -81,6 +87,13 @@ export default function Users() {
     setEditVisible(false);
   };
 
+  const handleSaveSelf = async (name: string, pin?: string) => {
+    if (!me) return;
+    await updateUser(me.id, name, pin);
+    signIn({ ...me, name: name.trim() });
+    setSelfVisible(false);
+  };
+
   const openEdit = (user: User) => {
     setEditingUser(user);
     setEditVisible(true);
@@ -103,6 +116,7 @@ export default function Users() {
         />
 
         <Button label="+ Agregar cajero" onPress={() => setAddVisible(true)} />
+        <SecondaryButton label="Cambiar mi NIP" icon="key" onPress={() => setSelfVisible(true)} />
 
         <View style={styles.list}>
           {error ? (
@@ -136,6 +150,14 @@ export default function Users() {
         onClose={() => setEditVisible(false)}
         onSave={handleSave}
         onDelete={handleDelete}
+      />
+
+      <EditCashierModal
+        visible={selfVisible}
+        user={me}
+        title="Mis datos"
+        onClose={() => setSelfVisible(false)}
+        onSave={handleSaveSelf}
       />
     </Screen>
   );

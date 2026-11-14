@@ -9,6 +9,7 @@ import QuantityStepper from '@/components/sale/quantity-stepper';
 import Button from '@/components/ui/button';
 import { initDatabase, searchItemsByName, type GroceryItem } from '@/lib/db';
 import { addItemToSale, getCartQuantity } from '@/lib/stores/sale-store';
+import { quantityStep, roundQuantity } from '@/lib/utils/format';
 
 export default function Search() {
   const router = useRouter();
@@ -35,7 +36,10 @@ export default function Search() {
     };
   }, [query, dbReady]);
 
-  const available = selected ? Math.max(selected.quantity - getCartQuantity(selected.id), 0) : 0;
+  const step = quantityStep(selected?.unit ?? 'pza');
+  const available = selected
+    ? Math.max(roundQuantity(selected.quantity - getCartQuantity(selected.id)), 0)
+    : 0;
   const exceeds = selected != null && quantity > available;
   // Si pide más de lo que hay, se añade solo lo disponible.
   const toAdd = Math.min(quantity, available);
@@ -73,8 +77,8 @@ export default function Search() {
         />
         <QuantityStepper
           quantity={quantity}
-          onDecrease={() => setQuantity((current) => Math.max(1, current - 1))}
-          onIncrease={() => setQuantity((current) => current + 1)}
+          onDecrease={() => setQuantity((current) => Math.max(step, current - step))}
+          onIncrease={() => setQuantity((current) => current + step)}
         />
         {exceeds && (
           <View style={styles.warning}>

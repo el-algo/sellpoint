@@ -14,13 +14,26 @@ import Button from '@/components/ui/button';
 import AmountInput from '@/components/checkout/amount-input';
 import TotalBar from '@/components/sale/total-bar';
 import { card } from '@/components/ui/theme';
-import { initDatabase, getDebtors, registerPayment, type Debtor } from '@/lib/db';
+import SegmentedControl from '@/components/ui/segmented-control';
+import {
+  initDatabase,
+  getDebtors,
+  registerPayment,
+  type Debtor,
+  type PaymentMethodForCredit,
+} from '@/lib/db';
 import { formatCurrency, formatDayMonth } from '@/lib/utils/format';
+
+const METHODS = [
+  { value: 'efectivo' as const, label: 'Efectivo' },
+  { value: 'transferencia' as const, label: 'Transferencia' },
+];
 
 export default function Credit() {
   const [debtors, setDebtors] = useState<Debtor[]>([]);
   const [selected, setSelected] = useState<Debtor | null>(null);
   const [amount, setAmount] = useState('');
+  const [method, setMethod] = useState<PaymentMethodForCredit>('efectivo');
   const [submitting, setSubmitting] = useState(false);
 
   const load = useCallback(async () => {
@@ -42,6 +55,7 @@ export default function Credit() {
   const selectDebtor = (debtor: Debtor) => {
     setSelected(debtor);
     setAmount('');
+    setMethod('efectivo');
   };
 
   const register = async () => {
@@ -49,7 +63,7 @@ export default function Credit() {
 
     setSubmitting(true);
     try {
-      await registerPayment(selected.name, payment);
+      await registerPayment(selected.name, payment, method);
       setSelected(null);
       setAmount('');
       await load();
@@ -97,7 +111,10 @@ export default function Credit() {
         />
 
         {selected && (
-          <AmountInput label={`Abono de ${selected.name}`} value={amount} onChangeText={setAmount} />
+          <>
+            <SegmentedControl options={METHODS} value={method} onChange={setMethod} />
+            <AmountInput label={`Abono de ${selected.name}`} value={amount} onChangeText={setAmount} />
+          </>
         )}
 
         <Button label="Registrar abono" disabled={!canRegister} onPress={register} />

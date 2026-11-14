@@ -76,7 +76,7 @@ export default function CashCount() {
         <ReceiptCard
           lines={[
             { label: 'Ventas en efectivo', value: formatCurrency(summary.cashSales) },
-            { label: 'Abonos recibidos', value: formatCurrency(summary.payments) },
+            { label: 'Abonos en efectivo', value: formatCurrency(summary.payments) },
             {
               label: 'Retiros y gastos',
               value:

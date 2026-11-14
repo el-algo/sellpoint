@@ -79,6 +79,7 @@ export default function Admin() {
       </View>
 
       <Button label="Administrar cajeros" icon="users-line" href="/users" />
+      <Button label="Nueva venta" href="/sale" icon="cart-shopping" />
     </Screen>
   );
 }

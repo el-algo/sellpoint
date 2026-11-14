@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import type { SaleItem } from '@/lib/utils/format';
+import { saleTotal, type SaleItem } from '@/lib/utils/format';
 import { initDatabase, createSale, type GroceryItem } from '@/lib/db';
 
 type Listener = () => void;
@@ -62,7 +62,13 @@ export function undoLastAdd() {
     )
     .filter((saleItem) => saleItem.quantity > 0);
   lastAdded = null;
+  dropOversizedDiscount();
   emit();
+}
+
+// Si al quitar productos el descuento ya no cabe, se borra para que se vuelva a pedir el NIP.
+function dropOversizedDiscount() {
+  if (discount > saleTotal(items)) discount = 0;
 }
 
 export function dismissLastAdded() {
@@ -89,6 +95,13 @@ export function addItemToSale(item: GroceryItem, quantity: number) {
     : [...items, { id, name: item.name, quantity, unitPrice: item.price, unit: item.unit }];
   lastAdded = { id, quantity };
 
+  emit();
+}
+
+export function removeItemFromSale(id: string) {
+  items = items.filter((saleItem) => saleItem.id !== id);
+  lastAdded = null;
+  dropOversizedDiscount();
   emit();
 }
 

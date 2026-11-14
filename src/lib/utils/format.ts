@@ -20,6 +20,16 @@ export function formatQuantity(quantity: number, unit: SaleUnit) {
   return unit === 'kg' ? `${quantity.toFixed(3)} kg` : `${quantity}`;
 }
 
+// Los productos por kilo se venden en cuartos de kilo.
+export function quantityStep(unit: SaleUnit) {
+  return unit === 'kg' ? 0.25 : 1;
+}
+
+// Evita restos como 2.0499999 al restar kilos.
+export function roundQuantity(quantity: number) {
+  return Math.round(quantity * 1000) / 1000;
+}
+
 export function formatUnits(quantity: number, unit: SaleUnit) {
   if (unit === 'kg') return `${quantity} kg`;
   return `${quantity} ${quantity === 1 ? 'pza' : 'pzas'}`;

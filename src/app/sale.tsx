@@ -10,7 +10,7 @@ import AmountInput from '@/components/checkout/amount-input';
 import Button from '@/components/ui/button';
 import SecondaryButton from '@/components/ui/secondary-button';
 import { Icon } from '@/components/ui/icon';
-import { formatCurrency, parseAmount, saleTotals } from '@/lib/utils/format';
+import { formatCurrency, parseAmount, saleTotals, type SaleItem } from '@/lib/utils/format';
 import {
   useSaleItems,
   useCurrentSaleId,
@@ -18,12 +18,19 @@ import {
   useLastAdded,
   startNewSale,
   clearSaleItems,
+  removeItemFromSale,
   setSaleDiscount,
   undoLastAdd,
   dismissLastAdded,
 } from '@/lib/stores/sale-store';
 
-type Authorizing = 'cancel' | 'discount' | null;
+type Authorizing = 'cancel' | 'discount' | 'remove' | null;
+
+const MODAL = {
+  cancel: { icon: 'trash-can', tone: 'danger' },
+  remove: { icon: 'trash-can', tone: 'danger' },
+  discount: { icon: 'file-invoice-dollar', tone: 'success' },
+} as const;
 
 export default function Sale() {
   const items = useSaleItems();
@@ -31,7 +38,14 @@ export default function Sale() {
   const requestedDiscount = useSaleDiscount();
   const lastAdded = useLastAdded();
 
+  // authorizing guarda la última acción para que la ventana no cambie de texto mientras se cierra.
   const [authorizing, setAuthorizing] = useState<Authorizing>(null);
+  const [pinOpen, setPinOpen] = useState(false);
+  const ask = (action: Exclude<Authorizing, null>) => {
+    setAuthorizing(action);
+    setPinOpen(true);
+  };
+  const [toRemove, setToRemove] = useState<SaleItem | null>(null);
   const [editingDiscount, setEditingDiscount] = useState(false);
   const [discountText, setDiscountText] = useState('');
 
@@ -57,11 +71,13 @@ export default function Sale() {
   const authorized = () => {
     if (authorizing === 'cancel') {
       clearSaleItems();
+    } else if (authorizing === 'remove') {
+      if (toRemove) removeItemFromSale(toRemove.id);
     } else {
       setDiscountText(discount > 0 ? String(discount) : '');
       setEditingDiscount(true);
     }
-    setAuthorizing(null);
+    setPinOpen(false);
   };
 
   const applyDiscount = () => {
@@ -77,14 +93,14 @@ export default function Sale() {
         <View style={styles.headerButtons}>
           <Pressable
             style={styles.headerButton}
-            onPress={() => items.length > 0 && setAuthorizing('discount')}
+            onPress={() => items.length > 0 && ask('discount')}
             accessibilityLabel="Aplicar descuento"
           >
             <Icon name="file-invoice-dollar" size={18} color="#0F172A" />
           </Pressable>
           <Pressable
             style={styles.headerButton}
-            onPress={() => items.length > 0 && setAuthorizing('cancel')}
+            onPress={() => items.length > 0 && ask('cancel')}
             accessibilityLabel="Cancelar venta"
           >
             <Icon name="trash-can" size={18} color="#0F172A" />
@@ -94,7 +110,13 @@ export default function Sale() {
     >
       <View style={styles.flex}>
         <SearchLink href="/search" />
-        <SaleItemList items={items} />
+        <SaleItemList
+          items={items}
+          onItemPress={(item) => {
+            setToRemove(item);
+            ask('remove');
+          }}
+        />
 
         {lastAdded && <UndoToast message="Producto añadido" onUndo={undoLastAdd} />}
 
@@ -129,11 +151,17 @@ export default function Sale() {
       </View>
 
       <AdminPinModal
-        visible={authorizing !== null}
-        action={authorizing === 'cancel' ? 'cancelar esta venta' : 'aplicar descuento'}
-        icon={authorizing === 'cancel' ? 'trash-can' : 'file-invoice-dollar'}
-        tone={authorizing === 'cancel' ? 'danger' : 'success'}
-        onCancel={() => setAuthorizing(null)}
+        visible={pinOpen}
+        action={
+          authorizing === 'cancel'
+            ? 'cancelar esta venta'
+            : authorizing === 'remove'
+              ? `quitar ${toRemove?.name ?? 'el producto'}`
+              : 'aplicar descuento'
+        }
+        icon={MODAL[authorizing ?? 'discount'].icon}
+        tone={MODAL[authorizing ?? 'discount'].tone}
+        onCancel={() => setPinOpen(false)}
         onAuthorized={authorized}
       />
     </Screen>

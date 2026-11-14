@@ -88,6 +88,8 @@ export async function createTables(db: SQLiteDatabase): Promise<void> {
   await addColumn(db, 'items', 'cost', 'REAL NOT NULL DEFAULT 0');
   await addColumn(db, 'items', 'low_stock', 'REAL NOT NULL DEFAULT 5');
   await addColumn(db, 'sale_items', 'unit_cost', 'REAL NOT NULL DEFAULT 0');
+  // Forma de pago de los abonos; los anteriores se tomaban como efectivo.
+  await addColumn(db, 'credit_entries', 'method', "TEXT NOT NULL DEFAULT 'efectivo'");
 }
 
 // CREATE TABLE IF NOT EXISTS no modifica tablas de bases ya instaladas.

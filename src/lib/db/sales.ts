@@ -44,7 +44,7 @@ export async function completeSale(input: CompleteSaleInput): Promise<void> {
         line.unitPrice * line.quantity
       );
       await db.runAsync(
-        'UPDATE items SET quantity = MAX(quantity - ?, 0) WHERE id = ?',
+        'UPDATE items SET quantity = ROUND(MAX(quantity - ?, 0), 3) WHERE id = ?',
         line.quantity,
         line.itemId
       );
@@ -65,7 +65,7 @@ export async function completeSale(input: CompleteSaleInput): Promise<void> {
 
     if (input.debtor) {
       await db.runAsync(
-        'INSERT INTO credit_entries (debtor, amount, created_at) VALUES (?, ?, ?)',
+        "INSERT INTO credit_entries (debtor, amount, created_at, method) VALUES (?, ?, ?, 'fiado')",
         input.debtor,
         input.total,
         new Date().toISOString()

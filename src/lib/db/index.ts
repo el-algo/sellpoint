@@ -43,7 +43,7 @@ export {
 } from './items';
 export { registerPurchase, purchaseTotal, type PurchaseLine } from './purchases';
 export { getReport, type Report, type TopItem } from './reports';
-export { getDebtors, registerPayment, type Debtor } from './credit';
+export { getDebtors, registerPayment, type Debtor, type PaymentMethodForCredit } from './credit';
 export {
   getCashCount,
   closeCashCount,
